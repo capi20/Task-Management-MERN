@@ -15,7 +15,7 @@ const taskSchema = new mongoose.Schema({
 	status: {
 		type: String,
 		default: "ToDo",
-		enum: ["ToDo", "In Progress", "Done"]
+		enum: ["Todo", "In Progress", "Done"]
 	},
 	priority: {
 		type: String,
@@ -30,7 +30,7 @@ const taskSchema = new mongoose.Schema({
 		required: [true, "Creator is required"] // Ensure that creator is required
 	},
 	dueDate: {
-		type: Date,
+		type: String,
 		required: [true, "Due date is required"] // Uncomment if you want dueDate to be required
 	},
 	createdAt: {
