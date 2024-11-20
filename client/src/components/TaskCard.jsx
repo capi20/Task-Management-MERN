@@ -22,6 +22,7 @@ const TaskCard = ({
 	createdAt,
 	updatedAt,
 	creator,
+	assignee,
 	navigateTo,
 	onTaskDelete
 }) => {
@@ -83,18 +84,28 @@ const TaskCard = ({
 							Due: {new Date(dueDate).toLocaleDateString()}
 						</Typography>
 					</Stack>
-					<Stack gap={0.5}>
-						<Typography variant="subtitle" color="grey">
-							Created by: {creator}
-						</Typography>
-						<Typography variant="subtitle" color="grey">
-							Created at:{" "}
-							{new Date(createdAt).toLocaleDateString()}
-						</Typography>
-						<Typography variant="subtitle" color="grey">
-							Last updated:{" "}
-							{new Date(updatedAt).toLocaleDateString()}
-						</Typography>
+					<Stack
+						gap={0.5}
+						direction="row"
+						justifyContent="space-between">
+						<Stack>
+							<Typography variant="body2" color="grey">
+								Created by: {creator}
+							</Typography>
+							<Typography variant="body2" color="grey">
+								Assigned to: {assignee}
+							</Typography>
+						</Stack>
+						<Stack alignItems="flex-end">
+							<Typography variant="body2" color="grey">
+								Created at:{" "}
+								{new Date(createdAt).toLocaleDateString()}
+							</Typography>
+							<Typography variant="body2" color="grey">
+								Last updated:{" "}
+								{new Date(updatedAt).toLocaleDateString()}
+							</Typography>
+						</Stack>
 					</Stack>
 				</Stack>
 			</CardContent>

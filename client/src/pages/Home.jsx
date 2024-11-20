@@ -1,7 +1,13 @@
 import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
 import TaskCard from "../components/TaskCard";
-import { Button, Grid2 as Grid, Typography } from "@mui/material";
+import {
+	Button,
+	Grid2 as Grid,
+	Pagination,
+	Stack,
+	Typography
+} from "@mui/material";
 import PageHeading from "../components/PageHeading";
 import AddIcon from "@mui/icons-material/Add";
 import { Link, useNavigate } from "react-router-dom";
@@ -16,9 +22,15 @@ const Home = () => {
 	const [debounceQuery, setdebounceQuery] = useState("");
 	const [priority, setPriority] = useState("");
 	const [status, setStatus] = useState("");
+	const [page, setPage] = useState(1);
+	const [totalPages, setTotalPages] = useState(0);
+
+	const handlePageChange = (event, value) => {
+		setPage(value);
+	};
 
 	useEffect(() => {
-		async function getAllTasks(isSearch) {
+		async function getTasks(isSearch) {
 			try {
 				let searchTitle =
 					debounceQuery !== "" ? `title=${debounceQuery}&` : "";
@@ -27,18 +39,19 @@ const Home = () => {
 				let searchStatus = status !== "" ? `status=${status}` : "";
 				let res = await axios(
 					isSearch
-						? `http://localhost:5000/api/tasks/search?${searchTitle}${searchPriority}${searchStatus}`
-						: "http://localhost:5000/api/tasks"
+						? `http://localhost:5000/api/tasks/search?page=${page}&limit=10&${searchTitle}${searchPriority}${searchStatus}`
+						: `http://localhost:5000/api/tasks?page=${page}&limit=10`
 				);
-				setTasks(res.data);
+				setTasks(res.data?.tasks || []);
+				setTotalPages(res.data?.totalPages || 0);
 			} catch (error) {}
 		}
 		if (debounceQuery !== "" || priority !== "" || status !== "") {
-			getAllTasks(true);
+			getTasks(true);
 		} else {
-			getAllTasks();
+			getTasks();
 		}
-	}, [reload, debounceQuery, priority, status]);
+	}, [reload, debounceQuery, priority, status, page]);
 
 	const debounce = useMemo(() => {
 		let timeoutId;
@@ -47,7 +60,10 @@ const Home = () => {
 			value = value.slice(-1) === " " ? value.trim() + " " : value;
 			setQuery(value);
 			clearTimeout(timeoutId);
-			timeoutId = setTimeout(() => setdebounceQuery(value), 500);
+			timeoutId = setTimeout(() => {
+				setdebounceQuery(value);
+				setPage(1);
+			}, 500);
 		};
 	}, []);
 
@@ -65,6 +81,7 @@ const Home = () => {
 		setdebounceQuery("");
 		setPriority("");
 		setStatus("");
+		setPage(1);
 	};
 
 	return (
@@ -80,60 +97,75 @@ const Home = () => {
 				debounceQuery !== "" ||
 				priority !== "" ||
 				status !== "") && (
-				<Grid container spacing={3}>
-					<Grid size={6}>
-						<Input
-							label="Search"
-							placeholder="Search task"
-							value={query}
-							onChange={(e) => debounce(e.target.value)}
+				<>
+					<Grid container spacing={3} mb={2}>
+						<Grid size={{ xs: 12, md: 6 }}>
+							<Input
+								label="Search"
+								placeholder="Search task"
+								value={query}
+								onChange={(e) => debounce(e.target.value)}
+							/>
+						</Grid>
+						<Grid size={{ xs: 4, md: 2 }}>
+							<Input
+								type="select"
+								label="Priority"
+								placeholder="Select priority"
+								list={priorityList}
+								value={priority}
+								onChange={(e) => {
+									setPriority(e.target.value);
+									setPage(1);
+								}}
+							/>
+						</Grid>
+						<Grid size={{ xs: 4, md: 2 }}>
+							<Input
+								type="select"
+								label="Status"
+								placeholder="Select status"
+								list={statusList}
+								value={status}
+								onChange={(e) => {
+									setStatus(e.target.value);
+									setPage(1);
+								}}
+							/>
+						</Grid>
+						<Grid
+							container
+							direction="column"
+							justifyContent="flex-end"
+							pb={0.5}
+							size={{ xs: 4, md: 2 }}>
+							<Button variant="outlined" onClick={onClearFilter}>
+								Clear Filters
+							</Button>
+						</Grid>
+						{tasks.length > 0 &&
+							tasks.map((task) => (
+								<Grid
+									key={task._id}
+									size={{ xs: 12, md: 6, xl: 4 }}>
+									<TaskCard
+										{...task}
+										navigateTo={() =>
+											navigate(`/task/${task._id}`)
+										}
+										onTaskDelete={onTaskDelete}
+									/>
+								</Grid>
+							))}
+					</Grid>
+					<Stack alignItems="flex-end">
+						<Pagination
+							count={totalPages}
+							page={page}
+							onChange={handlePageChange}
 						/>
-					</Grid>
-					<Grid size={2}>
-						<Input
-							type="select"
-							label="Priority"
-							placeholder="Select priority"
-							list={priorityList}
-							value={priority}
-							onChange={(e) => setPriority(e.target.value)}
-						/>
-					</Grid>
-					<Grid size={2}>
-						<Input
-							type="select"
-							label="Status"
-							placeholder="Select status"
-							list={statusList}
-							value={status}
-							onChange={(e) => setStatus(e.target.value)}
-						/>
-					</Grid>
-					<Grid
-						container
-						direction="column"
-						justifyContent="flex-end"
-						alignItems="flex-end"
-						pb={0.5}>
-						<Button variant="outlined" onClick={onClearFilter}>
-							Clear Filters
-						</Button>
-					</Grid>
-					{tasks.length > 0 &&
-						tasks.map((task) => (
-							<Grid
-								key={task._id}
-								size={{ xs: 12, md: 6, xl: 4 }}>
-								<TaskCard
-									{...task}
-									navigateTo={() =>
-										navigate(`/task/${task._id}`)
-									}
-									onTaskDelete={onTaskDelete}
-								/>
-							</Grid>
-						))}
-				</Grid>
+					</Stack>
+				</>
 			)}
 			{!tasks.length && (
 				<Typography

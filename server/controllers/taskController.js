@@ -33,8 +33,32 @@ export const createTask = async (req, res) => {
 // Get all tasks
 export const getTasks = async (req, res) => {
 	try {
-		const tasks = await Task.find();
-		res.status(200).json(tasks);
+		// Extract query parameters
+		const { page = 1, limit = 10 } = req.query;
+
+		// Convert page and limit to integers
+		const pageNumber = parseInt(page, 10);
+		const limitNumber = parseInt(limit, 10);
+
+		// Calculate the number of documents to skip
+		const skip = (pageNumber - 1) * limitNumber;
+
+		// Fetch tasks with pagination
+		const tasks = await Task.find().skip(skip).limit(limitNumber);
+
+		// Get the total count of tasks
+		const totalTasks = await Task.countDocuments();
+
+		// Calculate total pages
+		const totalPages = Math.ceil(totalTasks / limitNumber);
+
+		// Return paginated results
+		res.status(200).json({
+			totalTasks,
+			totalPages,
+			currentPage: pageNumber,
+			tasks
+		});
 	} catch (error) {
 		res.status(500).json({ message: error.message });
 	}
@@ -82,9 +106,9 @@ export const deleteTask = async (req, res) => {
 	}
 };
 
-// Delete tasks by title
+// Search tasks by title
 export const searchTasks = async (req, res) => {
-	const { title, priority, status } = req.query;
+	const { title, priority, status, page = 1, limit = 10 } = req.query;
 
 	if (!title && !priority && !status) {
 		return res
@@ -93,6 +117,11 @@ export const searchTasks = async (req, res) => {
 	}
 
 	try {
+		const pageNumber = parseInt(page, 10);
+		const limitNumber = parseInt(limit, 10);
+
+		const skip = (pageNumber - 1) * limitNumber;
+
 		const filter = {};
 
 		if (title) {
@@ -107,8 +136,21 @@ export const searchTasks = async (req, res) => {
 			filter.status = status; // Exact match
 		}
 
-		const tasks = await Task.find(filter);
-		res.status(200).json(tasks);
+		const tasks = await Task.find(filter).skip(skip).limit(limitNumber);
+
+		// Get the total count of tasks
+		const totalTasks = await Task.countDocuments(filter);
+
+		// Calculate total pages
+		const totalPages = Math.ceil(totalTasks / limitNumber);
+
+		// Return paginated results
+		res.status(200).json({
+			totalTasks,
+			totalPages,
+			currentPage: pageNumber,
+			tasks
+		});
 	} catch (err) {
 		res.status(500).json({
 			message: "Error searching tasks",
