@@ -108,9 +108,16 @@ export const deleteTask = async (req, res) => {
 
 // Search tasks by title
 export const searchTasks = async (req, res) => {
-	const { title, priority, status, page = 1, limit = 10 } = req.query;
+	const {
+		title,
+		priority,
+		status,
+		dueDate,
+		page = 1,
+		limit = 10
+	} = req.query;
 
-	if (!title && !priority && !status) {
+	if (!title && !priority && !status && !dueDate) {
 		return res
 			.status(400)
 			.json({ message: "At least one query parameter is required" });
@@ -134,6 +141,10 @@ export const searchTasks = async (req, res) => {
 
 		if (status) {
 			filter.status = status; // Exact match
+		}
+
+		if (dueDate) {
+			filter.dueDate = dueDate; // Exact match
 		}
 
 		const tasks = await Task.find(filter).skip(skip).limit(limitNumber);

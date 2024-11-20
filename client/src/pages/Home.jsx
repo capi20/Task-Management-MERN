@@ -22,6 +22,7 @@ const Home = () => {
 	const [debounceQuery, setdebounceQuery] = useState("");
 	const [priority, setPriority] = useState("");
 	const [status, setStatus] = useState("");
+	const [dueDate, setDueDate] = useState("");
 	const [page, setPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(0);
 
@@ -36,22 +37,28 @@ const Home = () => {
 					debounceQuery !== "" ? `title=${debounceQuery}&` : "";
 				let searchPriority =
 					priority !== "" ? `priority=${priority}&` : "";
-				let searchStatus = status !== "" ? `status=${status}` : "";
+				let searchStatus = status !== "" ? `status=${status}&` : "";
+				let searchDueDate = dueDate !== "" ? `dueDate=${dueDate}` : "";
 				let res = await axios(
 					isSearch
-						? `http://localhost:5000/api/tasks/search?page=${page}&limit=10&${searchTitle}${searchPriority}${searchStatus}`
+						? `http://localhost:5000/api/tasks/search?page=${page}&limit=10&${searchTitle}${searchPriority}${searchStatus}${searchDueDate}`
 						: `http://localhost:5000/api/tasks?page=${page}&limit=10`
 				);
 				setTasks(res.data?.tasks || []);
 				setTotalPages(res.data?.totalPages || 0);
 			} catch (error) {}
 		}
-		if (debounceQuery !== "" || priority !== "" || status !== "") {
+		if (
+			debounceQuery !== "" ||
+			priority !== "" ||
+			status !== "" ||
+			dueDate !== ""
+		) {
 			getTasks(true);
 		} else {
 			getTasks();
 		}
-	}, [reload, debounceQuery, priority, status, page]);
+	}, [reload, debounceQuery, priority, status, dueDate, page]);
 
 	const debounce = useMemo(() => {
 		let timeoutId;
@@ -81,6 +88,7 @@ const Home = () => {
 		setdebounceQuery("");
 		setPriority("");
 		setStatus("");
+		setDueDate("");
 		setPage(1);
 	};
 
@@ -96,10 +104,11 @@ const Home = () => {
 			{(tasks.length > 0 ||
 				debounceQuery !== "" ||
 				priority !== "" ||
-				status !== "") && (
+				status !== "" ||
+				dueDate !== "") && (
 				<>
 					<Grid container spacing={3} mb={2}>
-						<Grid size={{ xs: 12, md: 6 }}>
+						<Grid size={{ xs: 12, md: 4 }}>
 							<Input
 								label="Search"
 								placeholder="Search task"
@@ -107,7 +116,7 @@ const Home = () => {
 								onChange={(e) => debounce(e.target.value)}
 							/>
 						</Grid>
-						<Grid size={{ xs: 4, md: 2 }}>
+						<Grid size={{ xs: 3, md: 2 }}>
 							<Input
 								type="select"
 								label="Priority"
@@ -120,7 +129,7 @@ const Home = () => {
 								}}
 							/>
 						</Grid>
-						<Grid size={{ xs: 4, md: 2 }}>
+						<Grid size={{ xs: 3, md: 2 }}>
 							<Input
 								type="select"
 								label="Status"
@@ -133,12 +142,23 @@ const Home = () => {
 								}}
 							/>
 						</Grid>
+						<Grid size={{ xs: 3, md: 2 }}>
+							<Input
+								type="date"
+								label="Due Date"
+								value={dueDate}
+								onChange={(e) => {
+									setDueDate(e.target.value);
+									setPage(1);
+								}}
+							/>
+						</Grid>
 						<Grid
 							container
 							direction="column"
 							justifyContent="flex-end"
 							pb={0.5}
-							size={{ xs: 4, md: 2 }}>
+							size={{ xs: 3, md: 2 }}>
 							<Button variant="outlined" onClick={onClearFilter}>
 								Clear Filters
 							</Button>
@@ -178,7 +198,10 @@ const Home = () => {
 						alignItems: "center",
 						height: "50vh"
 					}}>
-					{debounceQuery !== "" || priority !== "" || status !== ""
+					{debounceQuery !== "" ||
+					priority !== "" ||
+					status !== "" ||
+					dueDate !== ""
 						? "No task found for searched query."
 						: "There is no task. Please click on add task to create a task."}
 				</Typography>
