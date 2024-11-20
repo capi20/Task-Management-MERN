@@ -1,67 +1,104 @@
-import { Stack, Typography } from "@mui/material";
-import SectionWrapper from "./SectionWrapper";
-import { Link } from "react-router-dom";
+import {
+	Box,
+	Card,
+	CardContent,
+	CardHeader,
+	IconButton,
+	Stack,
+	Typography
+} from "@mui/material";
+import { Link, useNavigate } from "react-router-dom";
+import { priorityList, statusList } from "../constants";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 
 const TaskCard = ({
 	_id,
 	title,
 	description,
 	priority,
+	status,
 	dueDate,
 	createdAt,
-	updatedAt
+	updatedAt,
+	creator,
+	navigateTo,
+	onTaskDelete
 }) => {
 	return (
-		<SectionWrapper>
-			<Stack
-				direction="row"
-				mb={2}
-				alignItems="center"
-				justifyContent="space-between">
-				<Typography variant="h6" fontWeight={600}>
-					<Link to={`/task/${_id}`}>{title}</Link>
-				</Typography>
-				<Typography
-					variant="body"
-					component="p"
-					fontWeight={600}
-					color={
-						priority === "High"
-							? "error"
-							: priority === "Medium"
-							? "warning"
-							: "secondary"
-					}>
-					{priority}
-				</Typography>
-			</Stack>
-			<Typography variant="body" component="p" mb={2}>
-				{description}
-			</Typography>
-			<Typography
-				variant="body2"
-				component="p"
-				color="grey"
-				fontStyle="italic"
-				mb={1}>
-				Due Date: {new Date(dueDate).toLocaleDateString()}
-			</Typography>
-			<Typography
-				variant="body2"
-				component="p"
-				color="grey"
-				fontStyle="italic"
-				mb={1}>
-				Created At: {new Date(createdAt).toLocaleDateString()}
-			</Typography>
-			<Typography
-				variant="body2"
-				component="p"
-				color="grey"
-				fontStyle="italic">
-				Last Updated: {new Date(updatedAt).toLocaleDateString()}
-			</Typography>
-		</SectionWrapper>
+		<Card>
+			<CardHeader
+				sx={{ pb: 0 }}
+				title={
+					<Stack direction="row" justifyContent="space-between">
+						<Typography
+							variant="h5"
+							style={{ flex: 1 }}
+							className="clip-text">
+							{title}
+						</Typography>
+						<IconButton onClick={navigateTo}>
+							<EditOutlinedIcon />
+						</IconButton>
+						<IconButton onClick={() => onTaskDelete(_id)}>
+							<DeleteOutlineOutlinedIcon />
+						</IconButton>
+					</Stack>
+				}
+			/>
+			<CardContent>
+				<Stack gap={3}>
+					<Typography
+						variant="body"
+						component="p"
+						className="clip-text">
+						{description}
+					</Typography>
+					<Stack direction="row" justifyContent="space-between">
+						<Stack direction="row" gap={2}>
+							<Typography
+								variant="body"
+								className={`priority ${
+									priority === priorityList[0]
+										? "low"
+										: priority === priorityList[1]
+										? "medium"
+										: "high"
+								}`}>
+								{priority} Priority
+							</Typography>
+							<Typography
+								variant="body"
+								className={`status ${
+									status === statusList[0]
+										? "pending"
+										: status === statusList[1]
+										? "in-progress"
+										: "completed"
+								}`}>
+								{status === "Todo" ? "Pending" : status}
+							</Typography>
+						</Stack>
+						<Typography variant="body">
+							Due: {new Date(dueDate).toLocaleDateString()}
+						</Typography>
+					</Stack>
+					<Stack gap={0.5}>
+						<Typography variant="subtitle" color="grey">
+							Created by: {creator}
+						</Typography>
+						<Typography variant="subtitle" color="grey">
+							Created at:{" "}
+							{new Date(createdAt).toLocaleDateString()}
+						</Typography>
+						<Typography variant="subtitle" color="grey">
+							Last updated:{" "}
+							{new Date(updatedAt).toLocaleDateString()}
+						</Typography>
+					</Stack>
+				</Stack>
+			</CardContent>
+		</Card>
 	);
 };
 export default TaskCard;

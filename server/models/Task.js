@@ -40,14 +40,6 @@ const taskSchema = new mongoose.Schema(
 				ref: "Comment"
 			}
 		]
-		// createdAt: {
-		// 	type: Date,
-		// 	default: Date.now
-		// },
-		// updatedAt: {
-		// 	type: Date,
-		// 	default: Date.now
-		// }
 	},
 	{ timestamps: true }
 );

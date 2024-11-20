@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Button, Stack } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import PageHeading from "./PageHeading";
 import SectionWrapper from "./SectionWrapper";
@@ -7,7 +7,7 @@ import Input from "./Input";
 import { priorityList, statusList, taskFields } from "../constants";
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import CommentCard from "./CommentCard";
 
@@ -22,6 +22,7 @@ const TaskForm = ({ task }) => {
 
 	const commentInput = watch(taskFields.comment);
 	const location = useLocation();
+	const navigate = useNavigate();
 	const isNew = location.pathname === "/newTask" ? true : false;
 
 	const [commentList, setCommentList] = useState([]);
@@ -42,6 +43,9 @@ const TaskForm = ({ task }) => {
 						`http://localhost:5000/api/tasks/${task._id}`,
 						data
 				  );
+			if (isNew) {
+				navigate("/");
+			}
 		} catch (error) {}
 	};
 
@@ -55,10 +59,8 @@ const TaskForm = ({ task }) => {
 	};
 
 	const onAddComment = async () => {
-		console.log(`http://localhost:5000/api/tasks/${task._id}/comments`);
 		try {
 			const data = {
-				taskId: task._id,
 				author: "test",
 				text: commentInput
 			};
@@ -72,10 +74,10 @@ const TaskForm = ({ task }) => {
 	};
 
 	return (
-		<Stack gap={5} p={5} maxWidth="1200px" margin="auto">
+		<Stack margin="auto">
+			<PageHeading title={isNew ? "New Task" : "Edit task"} />
 			<SectionWrapper>
-				<PageHeading title={isNew ? "New Task" : "Edit task"} />
-				<Grid container spacing={3}>
+				<Grid container spacing={3} mb={5}>
 					<Grid size={8}>
 						<Stack direction="row" gap={3}>
 							<Box flex={1}>
@@ -142,7 +144,7 @@ const TaskForm = ({ task }) => {
 							fullWidth
 							variant="contained"
 							onClick={handleSubmit((data) => onsubmit(data))}>
-							{isNew ? "Submit" : "Update"}
+							{isNew ? "Create" : "Update"}
 						</Button>
 					</Grid>
 					<Grid size={2}>
@@ -151,36 +153,38 @@ const TaskForm = ({ task }) => {
 						</Button>
 					</Grid>
 				</Grid>
+				{!isNew && (
+					<>
+						<Typography variant="h6" fontWeight={700}>
+							Comments
+						</Typography>
+						<Stack gap={4} maxWidth={600}>
+							<Input
+								type="textarea"
+								rows={6}
+								label="Comment"
+								{...register(taskFields.comment)}
+							/>
+							<Button
+								disabled={!commentInput || commentInput === ""}
+								variant="contained"
+								onClick={onAddComment}>
+								Add Comment
+							</Button>
+							{commentList.length > 0 && (
+								<Stack gap={3} mt={4}>
+									{commentList.reverse().map((comment) => (
+										<CommentCard
+											key={comment._id}
+											{...comment}
+										/>
+									))}
+								</Stack>
+							)}
+						</Stack>
+					</>
+				)}
 			</SectionWrapper>
-			{!isNew && (
-				<SectionWrapper>
-					<PageHeading title="Comments" />
-					<Stack gap={4} maxWidth={600}>
-						<Input
-							type="textarea"
-							rows={6}
-							label="Comment"
-							{...register(taskFields.comment)}
-						/>
-						<Button
-							disabled={!commentInput || commentInput === ""}
-							variant="contained"
-							onClick={onAddComment}>
-							Add Comment
-						</Button>
-						{commentList.length > 0 && (
-							<Stack gap={3} mt={4}>
-								{commentList.reverse().map((comment) => (
-									<CommentCard
-										key={comment._id}
-										{...comment}
-									/>
-								))}
-							</Stack>
-						)}
-					</Stack>
-				</SectionWrapper>
-			)}
 		</Stack>
 	);
 };

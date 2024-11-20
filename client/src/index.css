@@ -1,7 +1,7 @@
 :root {
 	--border-bottom: 1px solid rgba(0, 0, 0, 0.4);
 	--primary-black: rgba(0, 0, 0, 0.8);
-	--secondary-black: rgba(0, 0, 0, 0.6);
+	--secondary-black: rgba(0, 0, 0, 0.5);
 }
 
 *,
@@ -15,6 +15,7 @@ body {
 	min-height: 100vh;
 	font-family: "Roboto", "Helvetica", "Arial", sans-serif;
 	color: var(--primary-black);
+	background-color: #f5f5f5;
 }
 
 button {
@@ -35,7 +36,7 @@ select,
 textarea {
 	border: 1px solid var(--secondary-black);
 	border-radius: 5px;
-	padding: 5px;
+	padding: 5px 10px;
 	font-size: 16px;
 }
 
@@ -96,4 +97,41 @@ a.btn {
 
 a.btn:hover {
 	background-color: #1565c0;
+}
+
+.priority,
+.status {
+	padding: 5px 10px;
+	border-radius: 12px;
+	color: #fff;
+}
+
+.priority.high {
+	background-color: #e74c3c;
+}
+
+.priority.medium {
+	background-color: #f1c40f;
+}
+
+.priority.low {
+	background-color: #2ecc71;
+}
+
+.status.in-progress {
+	background-color: #3498db;
+}
+
+.status.completed {
+	background-color: #2ecc71;
+}
+
+.status.pending {
+	background-color: #f39c12;
+}
+
+.clip-text {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }

@@ -4,7 +4,8 @@ import Task from "../models/Task.js";
 
 // Add a comment to a task
 export const addCommentToTask = async (req, res) => {
-	const { taskId, author, text } = req.body;
+	const { author, text } = req.body;
+	const taskId = req.params.id;
 
 	try {
 		// Check if task exists

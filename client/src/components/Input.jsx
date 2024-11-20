@@ -39,6 +39,7 @@ const Input = forwardRef(
 						type={type}
 						ref={ref}
 						name={name}
+						placeholder={placeholder}
 						className={error ? "error" : ""}
 						{...props}
 					/>

@@ -7,7 +7,9 @@ const PageHeading = ({ title, children }) => {
 			justifyContent="space-between"
 			alignItems="center"
 			mb={3}>
-			<Typography variant="h4">{title}</Typography>
+			<Typography variant="h5" fontWeight={700}>
+				{title}
+			</Typography>
 			{children}
 		</Stack>
 	);

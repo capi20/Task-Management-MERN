@@ -1,4 +1,5 @@
 // controllers/taskController.js
+import Comment from "../models/Comment.js";
 import Task from "../models/Task.js";
 
 // Create a new task
@@ -74,8 +75,44 @@ export const deleteTask = async (req, res) => {
 		if (!task) {
 			return res.status(404).json({ message: "Task not found" });
 		}
+		await Comment.deleteMany({ taskId: req.params.id });
 		res.status(200).json({ message: "Task deleted successfully" });
 	} catch (error) {
 		res.status(500).json({ message: error.message });
+	}
+};
+
+// Delete tasks by title
+export const searchTasks = async (req, res) => {
+	const { title, priority, status } = req.query;
+
+	if (!title && !priority && !status) {
+		return res
+			.status(400)
+			.json({ message: "At least one query parameter is required" });
+	}
+
+	try {
+		const filter = {};
+
+		if (title) {
+			filter.title = { $regex: title, $options: "i" }; // Case-insensitive search
+		}
+
+		if (priority) {
+			filter.priority = priority; // Exact match
+		}
+
+		if (status) {
+			filter.status = status; // Exact match
+		}
+
+		const tasks = await Task.find(filter);
+		res.status(200).json(tasks);
+	} catch (err) {
+		res.status(500).json({
+			message: "Error searching tasks",
+			error: err.message
+		});
 	}
 };

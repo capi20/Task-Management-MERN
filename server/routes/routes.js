@@ -5,7 +5,8 @@ import {
 	getTasks,
 	getTaskById,
 	updateTask,
-	deleteTask
+	deleteTask,
+	searchTasks
 } from "../controllers/taskController.js";
 import { addCommentToTask } from "../controllers/commentController.js";
 
@@ -16,6 +17,9 @@ router.post("/", createTask);
 
 // Get all tasks
 router.get("/", getTasks);
+
+// Search tasks
+router.get("/search", searchTasks);
 
 // Get a single task by ID
 router.get("/:id", getTaskById);

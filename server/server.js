@@ -17,6 +17,8 @@ import cookieParser from "cookie-parser";
 
 //routers
 import router from "./routes/routes.js";
+// import Task from "./models/Task.js";
+// import { generateTasks } from "./dummyData.js";
 
 dotenv.config();
 const app = express();
@@ -46,9 +48,16 @@ app.use(errorHandlerMiddleware);
 
 const port = process.env.PORT || 5000;
 
+// const seedDatabase = async () => {
+// 	const tasks = generateTasks(100);
+// 	await Task.insertMany(tasks);
+// 	console.log("Database seeded with 100 tasks");
+// };
+
 const start = async () => {
 	try {
 		await connectDB(process.env.MONGO_URL);
+		// seedDatabase();
 		app.listen(port, () =>
 			console.log(`Server is listening on port ${port}...`)
 		);

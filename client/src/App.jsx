@@ -6,7 +6,7 @@ import TaskDetails from "./pages/TaskDetails";
 
 function App() {
 	return (
-		<Box component="main" p={5}>
+		<Box component="main" p={5} maxWidth="1440px" margin="auto">
 			<Routes>
 				<Route path="/" Component={Home} />
 				<Route path="/newTask" Component={NewTask} />
