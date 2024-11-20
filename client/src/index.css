@@ -19,6 +19,11 @@ body {
 
 button {
 	height: 44px;
+	text-transform: capitalize !important;
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	font-size: 16px !important;
 }
 
 label {
@@ -71,8 +76,24 @@ textarea.error {
 
 a {
 	color: var(--primary-black);
+	text-decoration: none;
 }
 
 a:hover {
 	color: var(--secondary-black);
+}
+
+a.btn {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 5px;
+	background-color: #1976d2;
+	color: #fff;
+	padding: 10px 20px;
+	border-radius: 5px;
+}
+
+a.btn:hover {
+	background-color: #1565c0;
 }

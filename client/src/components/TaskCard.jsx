@@ -19,7 +19,7 @@ const TaskCard = ({
 				alignItems="center"
 				justifyContent="space-between">
 				<Typography variant="h6" fontWeight={600}>
-					<Link to={`/tasks/${_id}`}>{title}</Link>
+					<Link to={`/task/${_id}`}>{title}</Link>
 				</Typography>
 				<Typography
 					variant="body"

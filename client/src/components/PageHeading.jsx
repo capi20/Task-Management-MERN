@@ -1,10 +1,15 @@
-import { Typography } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 
-const PageHeading = ({ title }) => {
+const PageHeading = ({ title, children }) => {
 	return (
-		<Typography variant="h4" mb={4}>
-			{title}
-		</Typography>
+		<Stack
+			direction="row"
+			justifyContent="space-between"
+			alignItems="center"
+			mb={3}>
+			<Typography variant="h4">{title}</Typography>
+			{children}
+		</Stack>
 	);
 };
 export default PageHeading;

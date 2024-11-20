@@ -4,7 +4,8 @@ export const taskFields = {
 	status: "status",
 	priority: "priority",
 	assignee: "assignee",
-	dueDate: "dueDate"
+	dueDate: "dueDate",
+	comment: "comment"
 };
 
 export const statusList = ["Todo", "In Progress", "Done"];

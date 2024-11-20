@@ -1,7 +1,10 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import TaskCard from "../components/TaskCard";
-import { Grid2 as Grid, Stack } from "@mui/material";
+import { Button, Grid2 as Grid, Stack } from "@mui/material";
+import PageHeading from "../components/PageHeading";
+import AddIcon from "@mui/icons-material/Add";
+import { Link } from "react-router-dom";
 
 const Home = () => {
 	const [tasks, setTasks] = useState([]);
@@ -17,13 +20,21 @@ const Home = () => {
 	}, []);
 
 	return (
-		<Grid container spacing={3}>
-			{tasks.map((task) => (
-				<Grid size={6}>
-					<TaskCard key={task._id} {...task} />
-				</Grid>
-			))}
-		</Grid>
+		<>
+			<PageHeading title="Dashboard">
+				<Link to="/newTask" className="btn">
+					<AddIcon />
+					Add Task
+				</Link>
+			</PageHeading>
+			<Grid container spacing={3}>
+				{tasks.map((task) => (
+					<Grid size={6}>
+						<TaskCard key={task._id} {...task} />
+					</Grid>
+				))}
+			</Grid>
+		</>
 	);
 };
 export default Home;
