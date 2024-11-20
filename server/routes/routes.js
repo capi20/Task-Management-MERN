@@ -7,6 +7,7 @@ import {
 	updateTask,
 	deleteTask
 } from "../controllers/taskController.js";
+import { addCommentToTask } from "../controllers/commentController.js";
 
 const router = express.Router();
 
@@ -24,5 +25,8 @@ router.put("/:id", updateTask);
 
 // Delete a task by ID
 router.delete("/:id", deleteTask);
+
+// Add comment to a task
+router.post("/:id/comments", addCommentToTask);
 
 export default router;

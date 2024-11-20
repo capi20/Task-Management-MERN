@@ -16,7 +16,7 @@ import mongoSanitize from "express-mongo-sanitize";
 import cookieParser from "cookie-parser";
 
 //routers
-import taskRouter from "./routes/taskRoutes.js";
+import router from "./routes/routes.js";
 
 dotenv.config();
 const app = express();
@@ -35,7 +35,7 @@ app.use(helmet());
 app.use(xss());
 app.use(mongoSanitize());
 
-app.use("/api/tasks", taskRouter);
+app.use("/api/tasks", router);
 
 app.get("*", (req, res) => {
 	res.sendFile(path.resolve(__dirname, "./client/build", "index.html"));

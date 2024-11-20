@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Box, Button, Stack } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import PageHeading from "./PageHeading";
@@ -9,20 +9,26 @@ import { useForm } from "react-hook-form";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
+import CommentCard from "./CommentCard";
 
 const TaskForm = ({ task }) => {
 	const {
 		register,
 		handleSubmit,
 		setValue,
+		watch,
 		formState: { errors }
 	} = useForm();
 
+	const commentInput = watch(taskFields.comment);
 	const location = useLocation();
 	const isNew = location.pathname === "/newTask" ? true : false;
-	console.log(location, isNew);
+
+	const [commentList, setCommentList] = useState([]);
+
 	useEffect(() => {
 		onreset();
+		setCommentList(task?.comments || []);
 	}, [task]);
 
 	const onsubmit = async (data) => {
@@ -48,8 +54,25 @@ const TaskForm = ({ task }) => {
 		setValue(taskFields.dueDate, task?.dueDate);
 	};
 
+	const onAddComment = async () => {
+		console.log(`http://localhost:5000/api/tasks/${task._id}/comments`);
+		try {
+			const data = {
+				taskId: task._id,
+				author: "test",
+				text: commentInput
+			};
+			const res = await axios.post(
+				`http://localhost:5000/api/tasks/${task._id}/comments`,
+				data
+			);
+			setValue(taskFields.comment, "");
+			setCommentList([res.data, ...commentList]);
+		} catch (error) {}
+	};
+
 	return (
-		<Box p={5} maxWidth="1200px" margin="auto">
+		<Stack gap={5} p={5} maxWidth="1200px" margin="auto">
 			<SectionWrapper>
 				<PageHeading title={isNew ? "New Task" : "Edit task"} />
 				<Grid container spacing={3}>
@@ -113,10 +136,6 @@ const TaskForm = ({ task }) => {
 							})}
 							error={errors[taskFields.dueDate]}
 						/>
-						<Input
-							label="Comment"
-							{...register(taskFields.comment)}
-						/>
 					</Grid>
 					<Grid size={2}>
 						<Button
@@ -133,7 +152,36 @@ const TaskForm = ({ task }) => {
 					</Grid>
 				</Grid>
 			</SectionWrapper>
-		</Box>
+			{!isNew && (
+				<SectionWrapper>
+					<PageHeading title="Comments" />
+					<Stack gap={4} maxWidth={600}>
+						<Input
+							type="textarea"
+							rows={6}
+							label="Comment"
+							{...register(taskFields.comment)}
+						/>
+						<Button
+							disabled={!commentInput || commentInput === ""}
+							variant="contained"
+							onClick={onAddComment}>
+							Add Comment
+						</Button>
+						{commentList.length > 0 && (
+							<Stack gap={3} mt={4}>
+								{commentList.reverse().map((comment) => (
+									<CommentCard
+										key={comment._id}
+										{...comment}
+									/>
+								))}
+							</Stack>
+						)}
+					</Stack>
+				</SectionWrapper>
+			)}
+		</Stack>
 	);
 };
 export default TaskForm;
