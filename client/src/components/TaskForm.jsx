@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import CommentCard from "./CommentCard";
+import { useAppContext } from "../context/appContext";
 
 const TaskForm = ({ task }) => {
 	const {
@@ -18,7 +19,11 @@ const TaskForm = ({ task }) => {
 		setValue,
 		watch,
 		formState: { errors }
-	} = useForm();
+	} = useForm({
+		defaultValues: {
+			status: statusList[0]
+		}
+	});
 
 	const commentInput = watch(taskFields.comment);
 	const location = useLocation();
@@ -26,10 +31,13 @@ const TaskForm = ({ task }) => {
 	const isNew = location.pathname === "/newTask" ? true : false;
 
 	const [commentList, setCommentList] = useState([]);
+	const { alertHandler } = useAppContext();
 
 	useEffect(() => {
-		onreset();
-		setCommentList(task?.comments || []);
+		if (!isNew) {
+			onreset();
+			setCommentList(task?.comments || []);
+		}
 	}, [task]);
 
 	const onsubmit = async (data) => {
@@ -44,9 +52,14 @@ const TaskForm = ({ task }) => {
 						data
 				  );
 			if (isNew) {
+				alertHandler(true, "Task created successfully!", "success");
 				navigate("/");
+			} else {
+				alertHandler(true, "Task updated successfully!", "success");
 			}
-		} catch (error) {}
+		} catch (error) {
+			alertHandler(true, error?.response?.data.message, "error");
+		}
 	};
 
 	const onreset = () => {
@@ -70,14 +83,17 @@ const TaskForm = ({ task }) => {
 			);
 			setValue(taskFields.comment, "");
 			setCommentList([res.data, ...commentList]);
-		} catch (error) {}
+			alertHandler(true, "Added comment successfully!", "success");
+		} catch (error) {
+			alertHandler(true, error.response.data.message, "error");
+		}
 	};
 
 	return (
 		<Stack margin="auto">
 			<PageHeading title={isNew ? "New Task" : "Edit task"} />
 			<SectionWrapper>
-				<Grid container spacing={3} mb={5}>
+				<Grid container spacing={3} mb={!isNew ? 5 : 1}>
 					<Grid size={8}>
 						<Stack direction="row" gap={3}>
 							<Box flex={1}>
@@ -92,19 +108,19 @@ const TaskForm = ({ task }) => {
 							<Box flex={1}>
 								<Input
 									type="select"
-									label="Status"
-									placeholder="Select status"
-									{...register(taskFields.status, {
+									label="Priority"
+									placeholder="Select priority"
+									{...register(taskFields.priority, {
 										required: true
 									})}
-									list={statusList}
-									error={errors[taskFields.status]}
+									list={priorityList}
+									error={errors[taskFields.priority]}
 								/>
 							</Box>
 						</Stack>
 						<Input
 							type="textarea"
-							rows={13}
+							rows={8}
 							label="Description"
 							{...register(taskFields.description, {
 								required: true
@@ -115,13 +131,9 @@ const TaskForm = ({ task }) => {
 					<Grid size={4}>
 						<Input
 							type="select"
-							label="Priority"
-							placeholder="Select priority"
-							{...register(taskFields.priority, {
-								required: true
-							})}
-							list={priorityList}
-							error={errors[taskFields.priority]}
+							label="Status"
+							{...register(taskFields.status)}
+							list={statusList}
 						/>
 						<Input
 							label="Assignee"
@@ -158,11 +170,11 @@ const TaskForm = ({ task }) => {
 						<Typography variant="h6" fontWeight={700}>
 							Comments
 						</Typography>
-						<Stack gap={4} maxWidth={600}>
+						<Stack gap={4} maxWidth={600} mb={3}>
 							<Input
 								type="textarea"
+								placeholder="Write a comment"
 								rows={6}
-								label="Comment"
 								{...register(taskFields.comment)}
 							/>
 							<Button

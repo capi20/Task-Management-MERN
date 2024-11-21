@@ -1,38 +1,38 @@
-// models/task.js
 import mongoose from "mongoose";
 
 const taskSchema = new mongoose.Schema(
 	{
 		title: {
 			type: String,
-			required: [true, "Please provide title"],
+			required: [true, "Title is required"],
 			trim: true
 		},
 		description: {
 			type: String,
-			required: [true, "Please provide description"],
+			required: [true, "Description is required"],
 			trim: true
 		},
 		status: {
 			type: String,
-			default: "ToDo",
+			default: "Todo",
 			enum: ["Todo", "In Progress", "Done"]
 		},
 		priority: {
 			type: String,
-			default: "Low",
-			enum: ["Low", "Medium", "High"]
+			enum: ["Low", "Medium", "High"],
+			required: [true, "Priority is required"]
 		},
 		assignee: {
-			type: String
+			type: String,
+			required: [true, "Assignee is required"]
 		},
 		creator: {
 			type: String,
-			required: [true, "Creator is required"] // Ensure that creator is required
+			required: [true, "Creator is required"]
 		},
 		dueDate: {
 			type: String,
-			required: [true, "Due date is required"] // Uncomment if you want dueDate to be required
+			required: [true, "Due date is required"]
 		},
 		comments: [
 			{
@@ -45,13 +45,13 @@ const taskSchema = new mongoose.Schema(
 );
 
 // if no assignee then assign it to creator's name
-taskSchema.pre("save", function (next) {
-	if (!this.assignee) {
-		this.assignee = this.creator;
-	}
+// taskSchema.pre("save", function (next) {
+// 	if (!this.assignee) {
+// 		this.assignee = this.creator;
+// 	}
 
-	next();
-});
+// 	next();
+// });
 
 const Task = mongoose.model("Task", taskSchema);
 

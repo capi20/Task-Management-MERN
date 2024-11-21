@@ -5,15 +5,15 @@ const commentSchema = new mongoose.Schema(
 		taskId: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Task", // This links the comment to a task
-			required: true
+			required: [true, "Task id is required"]
 		},
 		author: {
 			type: String, // You can use userID or username
-			required: true
+			required: [true, "Author is required"]
 		},
 		text: {
 			type: String,
-			required: true,
+			required: [true, "Comment is required"],
 			trim: true
 		}
 	},

@@ -9,10 +9,10 @@ import {
 	Typography
 } from "@mui/material";
 import PageHeading from "../components/PageHeading";
-import AddIcon from "@mui/icons-material/Add";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Input from "../components/Input";
 import { priorityList, statusList } from "../constants";
+import { useAppContext } from "../context/appContext";
 
 const Home = () => {
 	const [tasks, setTasks] = useState([]);
@@ -25,6 +25,7 @@ const Home = () => {
 	const [dueDate, setDueDate] = useState("");
 	const [page, setPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(0);
+	const { alertHandler } = useAppContext();
 
 	const handlePageChange = (event, value) => {
 		setPage(value);
@@ -46,7 +47,9 @@ const Home = () => {
 				);
 				setTasks(res.data?.tasks || []);
 				setTotalPages(res.data?.totalPages || 0);
-			} catch (error) {}
+			} catch (error) {
+				alertHandler(true, error.response.data.message, "error");
+			}
 		}
 		if (
 			debounceQuery !== "" ||
@@ -80,7 +83,10 @@ const Home = () => {
 				`http://localhost:5000/api/tasks/${taskId}`
 			);
 			setReload(!reload);
-		} catch (error) {}
+			alertHandler(true, "Task deleted successfully!", "success");
+		} catch (error) {
+			alertHandler(true, error.response.data.message, "error");
+		}
 	};
 
 	const onClearFilter = () => {
@@ -94,12 +100,7 @@ const Home = () => {
 
 	return (
 		<>
-			<PageHeading title="Dashboard">
-				<Link to="/newTask" className="btn">
-					<AddIcon />
-					Add Task
-				</Link>
-			</PageHeading>
+			<PageHeading title="Dashboard" />
 
 			{(tasks.length > 0 ||
 				debounceQuery !== "" ||
@@ -108,7 +109,7 @@ const Home = () => {
 				dueDate !== "") && (
 				<>
 					<Grid container spacing={3} mb={2}>
-						<Grid size={{ xs: 12, md: 4 }}>
+						<Grid size={{ xs: 12, md: 5 }}>
 							<Input
 								label="Search"
 								placeholder="Search task"
@@ -158,9 +159,9 @@ const Home = () => {
 							direction="column"
 							justifyContent="flex-end"
 							pb={0.5}
-							size={{ xs: 3, md: 2 }}>
+							size={{ xs: 3, md: 1 }}>
 							<Button variant="outlined" onClick={onClearFilter}>
-								Clear Filters
+								Clear
 							</Button>
 						</Grid>
 						{tasks.length > 0 &&

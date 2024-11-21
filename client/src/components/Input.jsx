@@ -6,6 +6,7 @@ const Input = forwardRef(
 		{ type = "text", name, label, list, error, placeholder, ...props },
 		ref
 	) => {
+		console.log(name, placeholder, list && list[0]);
 		return (
 			<Stack gap={1}>
 				<label id={name} className={error ? "error mt-4" : "mt-4"}>
@@ -15,6 +16,7 @@ const Input = forwardRef(
 					<textarea
 						ref={ref}
 						name={name}
+						placeholder={placeholder}
 						className={error ? "error" : ""}
 						{...props}
 					/>
@@ -24,10 +26,12 @@ const Input = forwardRef(
 						ref={ref}
 						name={name}
 						className={error ? "error" : ""}
-						defaultValue="">
-						<option disabled value="">
-							{placeholder}
-						</option>
+						defaultValue={placeholder && ""}>
+						{placeholder && (
+							<option disabled value="">
+								{placeholder}
+							</option>
+						)}
 						{list.map((option) => (
 							<option key={option} value={option}>
 								{option}

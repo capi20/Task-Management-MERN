@@ -33,7 +33,7 @@ const TaskCard = ({
 				title={
 					<Stack direction="row" justifyContent="space-between">
 						<Typography
-							variant="h5"
+							variant="h6"
 							style={{ flex: 1 }}
 							className="clip-text">
 							{title}
@@ -77,7 +77,7 @@ const TaskCard = ({
 										? "in-progress"
 										: "completed"
 								}`}>
-								{status === "Todo" ? "Pending" : status}
+								{status}
 							</Typography>
 						</Stack>
 						<Typography variant="body">

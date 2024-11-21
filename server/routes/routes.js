@@ -1,4 +1,3 @@
-// routes/taskRoutes.js
 import express from "express";
 import {
 	createTask,
@@ -18,7 +17,7 @@ router.post("/", createTask);
 // Get all tasks
 router.get("/", getTasks);
 
-// Search tasks
+// Search tasks by title, priority, status and due date
 router.get("/search", searchTasks);
 
 // Get a single task by ID

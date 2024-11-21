@@ -28,7 +28,7 @@ button {
 }
 
 label {
-	color: var(--secondary-black);
+	color: var(--primary-black);
 }
 
 input,
@@ -38,6 +38,7 @@ textarea {
 	border-radius: 5px;
 	padding: 5px 10px;
 	font-size: 16px;
+	background-color: #f5f5f5;
 }
 
 textarea {
@@ -76,12 +77,8 @@ textarea.error {
 }
 
 a {
-	color: var(--primary-black);
+	color: inherit;
 	text-decoration: none;
-}
-
-a:hover {
-	color: var(--secondary-black);
 }
 
 a.btn {
@@ -94,39 +91,51 @@ a.btn {
 	padding: 10px 20px;
 	border-radius: 5px;
 }
-
 a.btn:hover {
 	background-color: #1565c0;
 }
 
-.priority,
-.status {
-	padding: 5px 10px;
-	border-radius: 12px;
-	color: #fff;
+.nav-link {
+	font-size: 18px;
+	transition: transform 0.15s ease-in;
 }
 
-.priority.high {
+.nav-link.active {
+	border-bottom: 2px solid #f5f5f5;
+	transform: scale(1.05);
+}
+
+.priority::before,
+.status::before {
+	content: "";
+	display: inline-block;
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	margin-right: 5px;
+}
+
+.priority.high::before {
 	background-color: #e74c3c;
 }
 
-.priority.medium {
+.priority.medium::before {
 	background-color: #f1c40f;
 }
 
-.priority.low {
+.priority.low::before {
 	background-color: #2ecc71;
 }
 
-.status.in-progress {
+.status.in-progress::before {
 	background-color: #3498db;
 }
 
-.status.completed {
+.status.completed::before {
 	background-color: #2ecc71;
 }
 
-.status.pending {
+.status.pending::before {
 	background-color: #f39c12;
 }
 
@@ -134,4 +143,10 @@ a.btn:hover {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+}
+
+.app-layout {
+	padding: 20px 40px;
+	max-width: 1440px;
+	margin: auto;
 }
