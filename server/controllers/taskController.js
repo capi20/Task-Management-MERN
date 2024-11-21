@@ -5,22 +5,14 @@ import Task from "../models/Task.js";
 // Create a new task
 export const createTask = async (req, res) => {
 	try {
-		const {
-			title,
-			description,
-			status,
-			priority,
-			assignee,
-			creator,
-			dueDate
-		} = req.body;
+		const { title, description, status, priority, assignee, dueDate } =
+			req.body;
 		const task = new Task({
 			title,
 			description,
 			status,
 			priority,
 			assignee,
-			creator,
 			dueDate
 		});
 		await task.save();

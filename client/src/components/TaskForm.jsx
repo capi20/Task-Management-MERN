@@ -44,8 +44,7 @@ const TaskForm = ({ task }) => {
 		try {
 			const res = isNew
 				? await axios.post("http://localhost:5000/api/tasks", {
-						...data,
-						creator: "test"
+						...data
 				  })
 				: await axios.put(
 						`http://localhost:5000/api/tasks/${task._id}`,

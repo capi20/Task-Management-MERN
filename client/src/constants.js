@@ -10,3 +10,6 @@ export const taskFields = {
 
 export const statusList = ["Todo", "In Progress", "Done"];
 export const priorityList = ["Low", "Medium", "High"];
+
+export const EMAIL_ERROR = "Please provide a valid email";
+export const PASSWORD_ERROR = "At least 8 characters should be in password";

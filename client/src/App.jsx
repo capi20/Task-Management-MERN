@@ -1,24 +1,31 @@
-import { Alert, Box, Snackbar } from "@mui/material";
 import Home from "./pages/Home";
 import NewTask from "./pages/NewTask";
 import { Route, Routes } from "react-router-dom";
 import TaskDetails from "./pages/TaskDetails";
-import Header from "./components/Header";
-import { AppProvider, useAppContext } from "./context/appContext";
+import { AppProvider } from "./context/appContext";
 import AppLayout from "./components/AppLayout";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Login from "./pages/Login";
+import CustomAlert from "./components/CustomAlert";
 
 function App() {
 	return (
 		<AppProvider>
-			<Header />
-			<Box component="main" className="app-layout" mt={11}>
-				<Routes>
-					<Route path="/" Component={Home} />
-					<Route path="/newTask" Component={NewTask} />
-					<Route path="/task/:id" Component={TaskDetails} />
-				</Routes>
-			</Box>
-			<AppLayout />
+			<Routes>
+				<Route
+					path="/"
+					element={
+						<ProtectedRoute>
+							<AppLayout />
+						</ProtectedRoute>
+					}>
+					<Route index element={<Home />} />
+					<Route path="/newTask" element={<NewTask />} />
+					<Route path="/task/:id" element={<TaskDetails />} />
+				</Route>
+				<Route path="/login" element={<Login />} />
+			</Routes>
+			<CustomAlert />
 		</AppProvider>
 	);
 }

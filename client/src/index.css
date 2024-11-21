@@ -46,14 +46,15 @@ textarea {
 }
 
 input {
-	height: 40px;
+	height: 30px;
 }
 
 select {
-	height: 50px;
+	height: 40px;
 }
 
-label.error {
+label.error,
+.helperText-error {
 	color: rgb(211, 47, 47);
 }
 
@@ -61,19 +62,6 @@ input.error,
 select.error,
 textarea.error {
 	border-color: rgb(211, 47, 47);
-}
-
-.mt-1 {
-	margin-top: 5px;
-}
-.mt-2 {
-	margin-top: 10px;
-}
-.mt-3 {
-	margin-top: 15px;
-}
-.mt-4 {
-	margin-top: 20px;
 }
 
 a {
@@ -149,4 +137,13 @@ a.btn:hover {
 	padding: 20px 40px;
 	max-width: 1440px;
 	margin: auto;
+}
+
+.member-btn {
+	display: inline-block;
+	margin-left: 5px;
+	border: none;
+	background-color: transparent;
+	cursor: pointer;
+	text-decoration: underline;
 }

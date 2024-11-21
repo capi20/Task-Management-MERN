@@ -16,7 +16,9 @@ import mongoSanitize from "express-mongo-sanitize";
 import cookieParser from "cookie-parser";
 
 //routers
-import router from "./routes/routes.js";
+import taskRouter from "./routes/taskRoutes.js";
+import authRouter from "./routes/authRoutes.js";
+import authenticateUser from "./middleware/auth.js";
 // import Task from "./models/Task.js";
 // import { generateTasks } from "./dummyData.js";
 
@@ -30,14 +32,20 @@ if (process.env.NODE_ENV !== "production") {
 // const __dirname = dirname(fileURLToPath(import.meta.url));
 // app.use(express.static(path.resolve(__dirname, "./client/build")));
 
-app.use(cors());
+app.use(
+	cors({
+		origin: "http://localhost:5173", // Frontend URL
+		credentials: true // Allow cookies
+	})
+);
 app.use(express.json());
 app.use(cookieParser());
 app.use(helmet());
 app.use(xss());
 app.use(mongoSanitize());
 
-app.use("/api/tasks", router);
+app.use("/api/auth", authRouter);
+app.use("/api/tasks", authenticateUser, taskRouter);
 
 app.get("*", (req, res) => {
 	res.sendFile(path.resolve(__dirname, "../client/build", "index.html"));
