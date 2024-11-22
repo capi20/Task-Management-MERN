@@ -33,7 +33,10 @@ const TaskCard = ({
 			<CardHeader
 				sx={{ pb: 0 }}
 				title={
-					<Stack direction="row" justifyContent="space-between">
+					<Stack
+						direction="row"
+						justifyContent="space-between"
+						alignItems="center">
 						<Typography
 							variant="h6"
 							style={{ flex: 1 }}
@@ -50,9 +53,9 @@ const TaskCard = ({
 				}
 			/>
 			<CardContent>
-				<Stack gap={3}>
+				<Stack gap={2.5}>
 					<Typography
-						variant="body"
+						variant="body1"
 						component="p"
 						className="clip-text">
 						{description}
@@ -60,7 +63,7 @@ const TaskCard = ({
 					<Stack direction="row" justifyContent="space-between">
 						<Stack direction="row" gap={2}>
 							<Typography
-								variant="body"
+								variant="body1"
 								className={`priority ${
 									priority === priorityList[0]
 										? "low"
@@ -71,7 +74,7 @@ const TaskCard = ({
 								{priority} Priority
 							</Typography>
 							<Typography
-								variant="body"
+								variant="body1"
 								className={`status ${
 									status === statusList[0]
 										? "pending"
@@ -82,7 +85,7 @@ const TaskCard = ({
 								{status}
 							</Typography>
 						</Stack>
-						<Typography variant="body">
+						<Typography variant="body1">
 							Due: {new Date(dueDate).toLocaleDateString()}
 						</Typography>
 					</Stack>

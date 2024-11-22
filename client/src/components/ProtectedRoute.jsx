@@ -1,13 +1,14 @@
 import { Navigate } from "react-router-dom";
 import { useAppContext } from "../context/appContext";
-import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
 import Header from "./Header";
 import { serverInstance } from "../axiosInstances";
 import { useEffect } from "react";
+import Loader from "./Loader";
 
 const ProtectedRoute = ({ children }) => {
-	const { userLoading, user, setUserData, setUserLoading } = useAppContext();
+	const { userLoading, user, setUserData, setUserLoading, logoutUser } =
+		useAppContext();
 
 	useEffect(() => {
 		if (!user) {
@@ -27,14 +28,6 @@ const ProtectedRoute = ({ children }) => {
 		}
 	);
 
-	const logoutUser = async () => {
-		setUserData(null);
-		setUserLoading(false);
-		try {
-			await serverInstance.get("/auth/logout");
-		} catch (error) {}
-	};
-
 	const getCurrentUser = async () => {
 		try {
 			const { data } = await serverInstance.get("/auth/getCurrentUser");
@@ -52,15 +45,7 @@ const ProtectedRoute = ({ children }) => {
 		return (
 			<>
 				<Header />
-				<Box
-					sx={{
-						display: "flex",
-						justifyContent: "center",
-						alignItems: "center",
-						height: "100vh"
-					}}>
-					<CircularProgress sx={{ color: "grey.700" }} />
-				</Box>
+				<Loader />
 			</>
 		);
 	}

@@ -16,10 +16,10 @@ const Input = forwardRef(
 		ref
 	) => {
 		return (
-			<Stack gap={0.5}>
+			<Stack>
 				{label && (
 					<Typography
-						variant="body"
+						variant="body1"
 						component="label"
 						color="text.secondary"
 						htmlFor={name}
@@ -67,7 +67,8 @@ const Input = forwardRef(
 				)}
 				{helperText && (
 					<Typography
-						variant="subtitle"
+						variant="subtitle2"
+						component="span"
 						className={error ? "helperText-error" : ""}>
 						{helperText}
 					</Typography>

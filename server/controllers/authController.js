@@ -18,10 +18,8 @@ export const register = async (req, res, next) => {
 	const token = user.createJWT();
 	attachCookies(res, token);
 	res.status(StatusCodes.CREATED).json({
-		user: {
-			email: user.email,
-			name: user.name
-		}
+		email: user.email,
+		name: user.name
 	});
 };
 
@@ -46,7 +44,10 @@ export const login = async (req, res) => {
 	const token = user.createJWT();
 	user.password = undefined;
 	attachCookies(res, token);
-	res.status(StatusCodes.OK).json({ user });
+	res.status(StatusCodes.OK).json({
+		email: user.email,
+		name: user.name
+	});
 };
 
 export const getCurrentUser = async (req, res) => {

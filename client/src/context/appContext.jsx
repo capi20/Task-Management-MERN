@@ -23,6 +23,14 @@ const AppProvider = ({ children }) => {
 		setUser(data);
 	};
 
+	const logoutUser = async () => {
+		setUser(null);
+		setUserLoading(false);
+		try {
+			await serverInstance.get("/auth/logout");
+		} catch (error) {}
+	};
+
 	return (
 		<AppContext.Provider
 			value={{
@@ -31,7 +39,8 @@ const AppProvider = ({ children }) => {
 				userLoading,
 				alertHandler,
 				setUserData,
-				setUserLoading
+				setUserLoading,
+				logoutUser
 			}}>
 			{children}
 		</AppContext.Provider>

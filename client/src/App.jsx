@@ -7,6 +7,7 @@ import AppLayout from "./components/AppLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 import CustomAlert from "./components/CustomAlert";
+import TaskReminders from "./pages/Reminders";
 
 function App() {
 	return (
@@ -22,6 +23,7 @@ function App() {
 					<Route index element={<Home />} />
 					<Route path="/newTask" element={<NewTask />} />
 					<Route path="/task/:id" element={<TaskDetails />} />
+					<Route path="/reminders" element={<TaskReminders />} />
 				</Route>
 				<Route path="/login" element={<Login />} />
 			</Routes>

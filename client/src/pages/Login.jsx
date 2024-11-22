@@ -38,7 +38,8 @@ const Login = () => {
 				`auth/${isMember ? "login" : "register"}`,
 				data
 			);
-			setUserData({ email: res.email, name: res.name });
+			console.log(res);
+			setUserData({ email: res.data.email, name: res.data.name });
 			navigate("/");
 		} catch (error) {
 			alertHandler(true, error.response.data.message, "error");

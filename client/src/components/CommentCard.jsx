@@ -19,7 +19,7 @@ const CommentCard = ({ author, text, updatedAt }) => {
 				subheader={new Date(updatedAt).toLocaleString()}
 			/>
 			<CardContent>
-				<Typography variant="body" sx={{ color: "text.secondary" }}>
+				<Typography variant="body1" sx={{ color: "text.secondary" }}>
 					{text}
 				</Typography>
 			</CardContent>

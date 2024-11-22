@@ -113,11 +113,12 @@ export const searchTasks = async (req, res) => {
 		priority,
 		status,
 		dueDate,
+		assignee,
 		page = 1,
 		limit = 10
 	} = req.query;
 
-	if (!title && !priority && !status && !dueDate) {
+	if (!title && !priority && !status && !dueDate && !assignee) {
 		return res
 			.status(StatusCodes.BAD_REQUEST)
 			.json({ message: "At least one query parameter is required" });
@@ -145,6 +146,10 @@ export const searchTasks = async (req, res) => {
 
 		if (dueDate) {
 			filter.dueDate = dueDate; // Exact match
+		}
+
+		if (assignee) {
+			filter.assignee = assignee; // Exact match
 		}
 
 		const tasks = await Task.find(filter).skip(skip).limit(limitNumber);
