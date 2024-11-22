@@ -1,4 +1,5 @@
 // controllers/commentController.js
+import { StatusCodes } from "http-status-codes";
 import Comment from "../models/Comment.js";
 import Task from "../models/Task.js";
 
@@ -11,7 +12,9 @@ export const addCommentToTask = async (req, res) => {
 		// Check if task exists
 		const task = await Task.findById(taskId);
 		if (!task) {
-			return res.status(404).json({ message: "Task not found" });
+			return res
+				.status(StatusCodes.NOT_FOUND)
+				.json({ message: "Task not found" });
 		}
 
 		// Create a new comment
@@ -29,9 +32,11 @@ export const addCommentToTask = async (req, res) => {
 		await task.save();
 
 		// Return the newly created comment
-		res.status(201).json(newComment);
+		res.status(StatusCodes.CREATED).json(newComment);
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ message: "Server Error" });
+		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+			message: "Server Error"
+		});
 	}
 };

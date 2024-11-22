@@ -139,6 +139,12 @@ a.btn:hover {
 	margin: auto;
 }
 
+@media (max-width: 600px) {
+	.app-layout {
+		padding: 20px;
+	}
+}
+
 .member-btn {
 	display: inline-block;
 	margin-left: 5px;
@@ -146,4 +152,5 @@ a.btn:hover {
 	background-color: transparent;
 	cursor: pointer;
 	text-decoration: underline;
+	height: auto;
 }

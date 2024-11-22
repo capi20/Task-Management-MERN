@@ -8,9 +8,18 @@ import { priorityList, statusList, taskFields } from "../constants";
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
 import CommentCard from "./CommentCard";
 import { useAppContext } from "../context/appContext";
+import { serverInstance } from "../axiosInstances";
+
+const defaultValues = {
+	[taskFields.name]: "",
+	[taskFields.description]: "",
+	[taskFields.status]: statusList[0],
+	[taskFields.priority]: "",
+	[taskFields.assignee]: "",
+	[taskFields.dueDate]: ""
+};
 
 const TaskForm = ({ task }) => {
 	const {
@@ -20,9 +29,7 @@ const TaskForm = ({ task }) => {
 		watch,
 		formState: { errors }
 	} = useForm({
-		defaultValues: {
-			status: statusList[0]
-		}
+		defaultValues
 	});
 
 	const commentInput = watch(taskFields.comment);
@@ -31,11 +38,13 @@ const TaskForm = ({ task }) => {
 	const isNew = location.pathname === "/newTask" ? true : false;
 
 	const [commentList, setCommentList] = useState([]);
+	const [currentTask, setCurrentTask] = useState(defaultValues);
 	const { alertHandler } = useAppContext();
 
 	useEffect(() => {
 		if (!isNew) {
-			onreset();
+			onreset(task);
+			setCurrentTask(task);
 			setCommentList(task?.comments || []);
 		}
 	}, [task]);
@@ -43,17 +52,15 @@ const TaskForm = ({ task }) => {
 	const onsubmit = async (data) => {
 		try {
 			const res = isNew
-				? await axios.post("http://localhost:5000/api/tasks", {
+				? await serverInstance.post("tasks", {
 						...data
 				  })
-				: await axios.put(
-						`http://localhost:5000/api/tasks/${task._id}`,
-						data
-				  );
+				: await serverInstance.put(`tasks/${task._id}`, data);
 			if (isNew) {
 				alertHandler(true, "Task created successfully!", "success");
 				navigate("/");
 			} else {
+				setCurrentTask(res.data);
 				alertHandler(true, "Task updated successfully!", "success");
 			}
 		} catch (error) {
@@ -61,13 +68,13 @@ const TaskForm = ({ task }) => {
 		}
 	};
 
-	const onreset = () => {
-		setValue(taskFields.title, task?.title);
-		setValue(taskFields.description, task?.description);
-		setValue(taskFields.status, task?.status);
-		setValue(taskFields.priority, task?.priority);
-		setValue(taskFields.assignee, task?.assignee);
-		setValue(taskFields.dueDate, task?.dueDate);
+	const onreset = (taskObj) => {
+		setValue(taskFields.title, taskObj.title);
+		setValue(taskFields.description, taskObj.description);
+		setValue(taskFields.status, taskObj.status);
+		setValue(taskFields.priority, taskObj.priority);
+		setValue(taskFields.assignee, taskObj.assignee);
+		setValue(taskFields.dueDate, taskObj.dueDate);
 	};
 
 	const onAddComment = async () => {
@@ -76,8 +83,8 @@ const TaskForm = ({ task }) => {
 				author: "test",
 				text: commentInput
 			};
-			const res = await axios.post(
-				`http://localhost:5000/api/tasks/${task._id}/comments`,
+			const res = await serverInstance.post(
+				`tasks/${task._id}/comments`,
 				data
 			);
 			setValue(taskFields.comment, "");
@@ -92,9 +99,9 @@ const TaskForm = ({ task }) => {
 		<Stack margin="auto">
 			<PageHeading title={isNew ? "New Task" : "Edit task"} />
 			<SectionWrapper>
-				<Grid container spacing={3} mb={!isNew ? 5 : 1}>
-					<Grid size={8}>
-						<Stack direction="row" gap={3}>
+				<Grid container rowSpacing={3} spacing={3}>
+					<Grid size={{ xs: 12, md: 8 }}>
+						<Stack direction="row" gap={3} mb={3}>
 							<Box flex={1}>
 								<Input
 									label="Title"
@@ -119,7 +126,7 @@ const TaskForm = ({ task }) => {
 						</Stack>
 						<Input
 							type="textarea"
-							rows={8}
+							rows={7}
 							label="Description"
 							{...register(taskFields.description, {
 								required: true
@@ -127,20 +134,24 @@ const TaskForm = ({ task }) => {
 							error={errors[taskFields.description]}
 						/>
 					</Grid>
-					<Grid size={4}>
-						<Input
-							type="select"
-							label="Status"
-							{...register(taskFields.status)}
-							list={statusList}
-						/>
-						<Input
-							label="Assignee"
-							{...register(taskFields.assignee, {
-								required: true
-							})}
-							error={errors[taskFields.assignee]}
-						/>
+					<Grid size={{ xs: 12, md: 4 }}>
+						<Box mb={3}>
+							<Input
+								type="select"
+								label="Status"
+								{...register(taskFields.status)}
+								list={statusList}
+							/>
+						</Box>
+						<Box mb={3}>
+							<Input
+								label="Assignee"
+								{...register(taskFields.assignee, {
+									required: true
+								})}
+								error={errors[taskFields.assignee]}
+							/>
+						</Box>
 						<Input
 							type="date"
 							label="Due Date"
@@ -150,7 +161,7 @@ const TaskForm = ({ task }) => {
 							error={errors[taskFields.dueDate]}
 						/>
 					</Grid>
-					<Grid size={2}>
+					<Grid size={{ xs: 4, sm: 3, md: 2 }}>
 						<Button
 							fullWidth
 							variant="contained"
@@ -158,18 +169,21 @@ const TaskForm = ({ task }) => {
 							{isNew ? "Create" : "Update"}
 						</Button>
 					</Grid>
-					<Grid size={2}>
-						<Button fullWidth variant="outlined" onClick={onreset}>
+					<Grid size={{ xs: 4, sm: 3, md: 2 }}>
+						<Button
+							fullWidth
+							variant="outlined"
+							onClick={() => onreset(currentTask)}>
 							Reset
 						</Button>
 					</Grid>
 				</Grid>
 				{!isNew && (
 					<>
-						<Typography variant="h6" fontWeight={700}>
+						<Typography variant="h6" fontWeight={700} mt={6} mb={2}>
 							Comments
 						</Typography>
-						<Stack gap={4} maxWidth={600} mb={3}>
+						<Stack maxWidth={600} gap={3}>
 							<Input
 								type="textarea"
 								placeholder="Write a comment"
@@ -183,7 +197,7 @@ const TaskForm = ({ task }) => {
 								Add Comment
 							</Button>
 							{commentList.length > 0 && (
-								<Stack gap={3} mt={4}>
+								<Stack gap={3}>
 									{commentList.reverse().map((comment) => (
 										<CommentCard
 											key={comment._id}

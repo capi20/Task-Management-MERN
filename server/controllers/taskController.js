@@ -1,24 +1,27 @@
 // controllers/taskController.js
 import Comment from "../models/Comment.js";
 import Task from "../models/Task.js";
+import { StatusCodes } from "http-status-codes";
 
 // Create a new task
 export const createTask = async (req, res) => {
 	try {
 		const { title, description, status, priority, assignee, dueDate } =
 			req.body;
+		const creator = req.user.name;
 		const task = new Task({
 			title,
 			description,
 			status,
 			priority,
 			assignee,
+			creator,
 			dueDate
 		});
 		await task.save();
-		res.status(201).json(task);
+		res.status(StatusCodes.CREATED).json(task);
 	} catch (error) {
-		res.status(400).json({ message: error.message });
+		res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
 	}
 };
 
@@ -45,14 +48,16 @@ export const getTasks = async (req, res) => {
 		const totalPages = Math.ceil(totalTasks / limitNumber);
 
 		// Return paginated results
-		res.status(200).json({
+		res.status(StatusCodes.OK).json({
 			totalTasks,
 			totalPages,
 			currentPage: pageNumber,
 			tasks
 		});
 	} catch (error) {
-		res.status(500).json({ message: error.message });
+		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+			message: error.message
+		});
 	}
 };
 
@@ -61,11 +66,15 @@ export const getTaskById = async (req, res) => {
 	try {
 		const task = await Task.findById(req.params.id).populate("comments");
 		if (!task) {
-			return res.status(404).json({ message: "Task not found" });
+			return res
+				.status(StatusCodes.NOT_FOUND)
+				.json({ message: "Task not found" });
 		}
-		res.status(200).json(task);
+		res.status(StatusCodes.OK).json(task);
 	} catch (error) {
-		res.status(500).json({ message: error.message });
+		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+			message: error.message
+		});
 	}
 };
 
@@ -78,9 +87,9 @@ export const updateTask = async (req, res) => {
 		if (!task) {
 			return res.status(404).json({ message: "Task not found" });
 		}
-		res.status(200).json(task);
+		res.status(StatusCodes.OK).json(task);
 	} catch (error) {
-		res.status(400).json({ message: error.message });
+		res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
 	}
 };
 
@@ -89,12 +98,18 @@ export const deleteTask = async (req, res) => {
 	try {
 		const task = await Task.findByIdAndDelete(req.params.id);
 		if (!task) {
-			return res.status(404).json({ message: "Task not found" });
+			return res
+				.status(StatusCodes.NOT_FOUND)
+				.json({ message: "Task not found" });
 		}
 		await Comment.deleteMany({ taskId: req.params.id });
-		res.status(200).json({ message: "Task deleted successfully" });
+		res.status(StatusCodes.OK).json({
+			message: "Task deleted successfully"
+		});
 	} catch (error) {
-		res.status(500).json({ message: error.message });
+		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+			message: error.message
+		});
 	}
 };
 
@@ -111,7 +126,7 @@ export const searchTasks = async (req, res) => {
 
 	if (!title && !priority && !status && !dueDate) {
 		return res
-			.status(400)
+			.status(StatusCodes.BAD_REQUEST)
 			.json({ message: "At least one query parameter is required" });
 	}
 
@@ -148,14 +163,14 @@ export const searchTasks = async (req, res) => {
 		const totalPages = Math.ceil(totalTasks / limitNumber);
 
 		// Return paginated results
-		res.status(200).json({
+		res.status(StatusCodes.OK).json({
 			totalTasks,
 			totalPages,
 			currentPage: pageNumber,
 			tasks
 		});
 	} catch (err) {
-		res.status(500).json({
+		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 			message: "Error searching tasks",
 			error: err.message
 		});

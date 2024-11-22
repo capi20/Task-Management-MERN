@@ -8,8 +8,8 @@ const AppProvider = ({ children }) => {
 		message: "",
 		type: ""
 	});
-	const [user, setUser] = useState(true);
-	const [userLoading, setUserLoading] = useState(false);
+	const [user, setUser] = useState(null);
+	const [userLoading, setUserLoading] = useState(true);
 
 	const alertHandler = (open, message = "", type = "") => {
 		setAlert({
@@ -30,7 +30,8 @@ const AppProvider = ({ children }) => {
 				user,
 				userLoading,
 				alertHandler,
-				setUserData
+				setUserData,
+				setUserLoading
 			}}>
 			{children}
 		</AppContext.Provider>

@@ -50,20 +50,14 @@ export const login = async (req, res) => {
 };
 
 export const getCurrentUser = async (req, res) => {
-	const user = await User.findOne({ _id: req.user.userId });
-	res.status(StatusCodes.OK).json({ name: user.name, email: user.email });
+	res.status(StatusCodes.OK).json({
+		name: req.user.name,
+		email: req.user.email
+	});
 };
 
 export const logout = async (req, res) => {
-	const cookieOptions = {
-		expires: new Date(Date.now() + 5 * 1000),
-		httpOnly: true
-	};
-	if (process.env.NODE_ENV === "production") {
-		cookieOptions.secure = true;
-		cookieOptions.sameSite = "None";
-	}
-	res.cookie("token", "logout", cookieOptions);
+	attachCookies(res, "logout", 5 * 1000);
 
 	res.status(StatusCodes.OK).json({ msg: "user logged out!" });
 };

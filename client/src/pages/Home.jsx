@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
 import TaskCard from "../components/TaskCard";
 import {
@@ -13,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import Input from "../components/Input";
 import { priorityList, statusList } from "../constants";
 import { useAppContext } from "../context/appContext";
+import { serverInstance } from "../axiosInstances";
 
 const Home = () => {
 	const [tasks, setTasks] = useState([]);
@@ -40,10 +40,10 @@ const Home = () => {
 					priority !== "" ? `priority=${priority}&` : "";
 				let searchStatus = status !== "" ? `status=${status}&` : "";
 				let searchDueDate = dueDate !== "" ? `dueDate=${dueDate}` : "";
-				let res = await axios(
+				let res = await serverInstance(
 					isSearch
-						? `http://localhost:5000/api/tasks/search?page=${page}&limit=10&${searchTitle}${searchPriority}${searchStatus}${searchDueDate}`
-						: `http://localhost:5000/api/tasks?page=${page}&limit=10`
+						? `tasks/search?page=${page}&limit=10&${searchTitle}${searchPriority}${searchStatus}${searchDueDate}`
+						: `tasks?page=${page}&limit=10`
 				);
 				setTasks(res.data?.tasks || []);
 				setTotalPages(res.data?.totalPages || 0);
@@ -79,9 +79,7 @@ const Home = () => {
 
 	const onTaskDelete = async (taskId) => {
 		try {
-			let res = await axios.delete(
-				`http://localhost:5000/api/tasks/${taskId}`
-			);
+			let res = await serverInstance.delete(`tasks/${taskId}`);
 			setReload(!reload);
 			alertHandler(true, "Task deleted successfully!", "success");
 		} catch (error) {
@@ -108,7 +106,7 @@ const Home = () => {
 				status !== "" ||
 				dueDate !== "") && (
 				<>
-					<Grid container spacing={3} mb={2}>
+					<Grid container spacing={2} mb={2}>
 						<Grid size={{ xs: 12, md: 5 }}>
 							<Input
 								label="Search"
@@ -154,12 +152,7 @@ const Home = () => {
 								}}
 							/>
 						</Grid>
-						<Grid
-							container
-							direction="column"
-							justifyContent="flex-end"
-							pb={0.5}
-							size={{ xs: 3, md: 1 }}>
+						<Grid pt={2.5} size={{ xs: 3, md: 1 }} mb={3}>
 							<Button variant="outlined" onClick={onClearFilter}>
 								Clear
 							</Button>

@@ -16,7 +16,7 @@ const Input = forwardRef(
 		ref
 	) => {
 		return (
-			<Stack gap={0.5} mb={3}>
+			<Stack gap={0.5}>
 				{label && (
 					<Typography
 						variant="body"
@@ -42,8 +42,7 @@ const Input = forwardRef(
 						ref={ref}
 						name={name}
 						id={name}
-						className={error ? "error" : ""}
-						defaultValue={placeholder && ""}>
+						className={error ? "error" : ""}>
 						{placeholder && (
 							<option disabled value="">
 								{placeholder}

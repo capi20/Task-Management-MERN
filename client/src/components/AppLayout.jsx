@@ -7,7 +7,7 @@ const AppLayout = () => {
 	return (
 		<>
 			<Header />
-			<Box component="main" className="app-layout" pt={11}>
+			<Box component="main" className="app-layout" pt={9} pb={5}>
 				<Outlet />
 			</Box>
 		</>

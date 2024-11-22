@@ -4,33 +4,38 @@ import Input from "../components/Input";
 import { useState } from "react";
 import { EMAIL_ERROR, PASSWORD_ERROR } from "../constants";
 import { useAppContext } from "../context/appContext";
-import axios from "axios";
 import { serverInstance } from "../axiosInstances";
 import { useNavigate } from "react-router-dom";
+
+const defaultValues = {
+	name: "",
+	email: "",
+	password: ""
+};
 
 const Login = () => {
 	const [isMember, setIsMember] = useState(true);
 	const {
 		register,
 		handleSubmit,
-		setValue,
-		watch,
+		reset,
 		formState: { errors, isSubmitting }
-	} = useForm();
+	} = useForm({
+		defaultValues
+	});
+
 	const { alertHandler, setUserData } = useAppContext();
 	const navigate = useNavigate();
 
 	const toggleMember = () => {
 		setIsMember(!isMember);
-		setValue("name", "");
-		setValue("email", "");
-		setValue("password", "");
+		reset(defaultValues);
 	};
 
 	const onsubmit = async (data) => {
 		try {
 			const res = await serverInstance.post(
-				`api/auth/${isMember ? "login" : "register"}`,
+				`auth/${isMember ? "login" : "register"}`,
 				data
 			);
 			setUserData({ email: res.email, name: res.name });
@@ -41,8 +46,8 @@ const Login = () => {
 	};
 
 	return (
-		<Stack height="100vh" justifyContent="center" alignItems="center">
-			<Box minWidth={400}>
+		<Stack p={5} height="90vh" justifyContent="center" alignItems="center">
+			<Stack gap={3} width={{ xs: "auto", sm: 400 }}>
 				<Typography variant="h4" mb={4} color="grey.700">
 					Login to ZenTask
 				</Typography>
@@ -72,7 +77,7 @@ const Login = () => {
 					label="Password"
 					{...register("password", {
 						required: true,
-						minLength: 8
+						minLength: !isMember && 8
 					})}
 					helperText={
 						errors.password?.type === "minLength" && PASSWORD_ERROR
@@ -89,7 +94,7 @@ const Login = () => {
 						(isSubmitting ? "Registering..." : "Register")}
 				</Button>
 
-				<Typography mt={2} align="center" color="text.secondary">
+				<Typography align="center" color="text.secondary">
 					{isMember ? "Not a member yet?" : "Already a member?"}
 
 					<button
@@ -99,7 +104,7 @@ const Login = () => {
 						{isMember ? "Register" : "Login"}
 					</button>
 				</Typography>
-			</Box>
+			</Stack>
 		</Stack>
 	);
 };

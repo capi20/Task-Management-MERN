@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import TaskForm from "../components/TaskForm";
 import { useParams } from "react-router-dom";
 import { useAppContext } from "../context/appContext";
+import { serverInstance } from "../axiosInstances";
 
 const TaskDetails = () => {
 	const params = useParams();
@@ -12,9 +12,7 @@ const TaskDetails = () => {
 	useEffect(() => {
 		async function getTask() {
 			try {
-				let res = await axios(
-					`http://localhost:5000/api/tasks/${params.id}`
-				);
+				let res = await serverInstance(`/tasks/${params.id}`);
 				setTask(res.data);
 			} catch (error) {
 				alertHandler(true, error.response.data.message, "error");
