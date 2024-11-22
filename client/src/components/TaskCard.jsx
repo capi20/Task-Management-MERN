@@ -5,6 +5,8 @@ import {
 	CardHeader,
 	Chip,
 	IconButton,
+	Menu,
+	MenuItem,
 	Stack,
 	Typography
 } from "@mui/material";
@@ -12,6 +14,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { priorityList, statusList } from "../constants";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import MoreVertOutlinedIcon from "@mui/icons-material/MoreVertOutlined";
+import { useState } from "react";
 
 const TaskCard = ({
 	_id,
@@ -25,8 +29,7 @@ const TaskCard = ({
 	creator,
 	assignee,
 	labels,
-	navigateTo,
-	onTaskDelete
+	handleMenuClick
 }) => {
 	return (
 		<Card>
@@ -43,11 +46,8 @@ const TaskCard = ({
 							className="clip-text">
 							{title}
 						</Typography>
-						<IconButton onClick={navigateTo}>
-							<EditOutlinedIcon />
-						</IconButton>
-						<IconButton onClick={() => onTaskDelete(_id)}>
-							<DeleteOutlineOutlinedIcon />
+						<IconButton onClick={(e) => handleMenuClick(e, _id)}>
+							<MoreVertOutlinedIcon />
 						</IconButton>
 					</Stack>
 				}

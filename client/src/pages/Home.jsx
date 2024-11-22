@@ -3,9 +3,10 @@ import TaskCard from "../components/TaskCard";
 import {
 	Button,
 	Checkbox,
-	CircularProgress,
 	FormControlLabel,
 	Grid2 as Grid,
+	Menu,
+	MenuItem,
 	Pagination,
 	Stack,
 	Typography
@@ -33,7 +34,19 @@ const Home = () => {
 	const [checked, setChecked] = useState(false);
 	const [loading, setLoading] = useState(true);
 	const [isSearch, setIsSearch] = useState(false);
+	const [taskClicked, setTaskClicked] = useState("");
 	const { alertHandler, user, setOpenLoader } = useAppContext();
+
+	const [anchorEl, setAnchorEl] = useState(null);
+	const openMenu = Boolean(anchorEl);
+
+	const handleMenuClick = (event, id) => {
+		setAnchorEl(event.currentTarget);
+		setTaskClicked(id);
+	};
+	const handleMenuClose = () => {
+		setAnchorEl(null);
+	};
 
 	const handlePageChange = (event, value) => {
 		setPage(value);
@@ -205,10 +218,7 @@ const Home = () => {
 								size={{ xs: 12, md: 6, xl: 4 }}>
 								<TaskCard
 									{...task}
-									navigateTo={() =>
-										navigate(`/task/${task._id}`)
-									}
-									onTaskDelete={onTaskDelete}
+									handleMenuClick={handleMenuClick}
 								/>
 							</Grid>
 						))}
@@ -239,6 +249,32 @@ const Home = () => {
 				</Typography>
 			)}
 			{loading && <Loader />}
+			<Menu
+				anchorEl={anchorEl}
+				open={openMenu}
+				onClose={handleMenuClose}
+				transformOrigin={{
+					vertical: "top",
+					horizontal: "center"
+				}}
+				anchorOrigin={{
+					vertical: "bottom",
+					horizontal: "left"
+				}}>
+				<MenuItem
+					onClick={() => {
+						navigate(`/task/${taskClicked}`);
+					}}>
+					Edit
+				</MenuItem>
+				<MenuItem
+					onClick={() => {
+						onTaskDelete(taskClicked);
+						handleMenuClose();
+					}}>
+					Delete
+				</MenuItem>
+			</Menu>
 		</>
 	);
 };
