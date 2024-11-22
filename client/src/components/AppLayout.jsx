@@ -1,5 +1,4 @@
-import { Alert, Box, Snackbar } from "@mui/material";
-import { useAppContext } from "../context/appContext";
+import { Box } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import Header from "./Header";
 

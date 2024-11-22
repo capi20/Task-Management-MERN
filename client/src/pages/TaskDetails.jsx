@@ -7,15 +7,18 @@ import { serverInstance } from "../axiosInstances";
 const TaskDetails = () => {
 	const params = useParams();
 	const [task, setTask] = useState([]);
-	const { alertHandler } = useAppContext();
+	const { alertHandler, setOpenLoader } = useAppContext();
 
 	useEffect(() => {
 		async function getTask() {
 			try {
+				setOpenLoader(true);
 				let res = await serverInstance(`/tasks/${params.id}`);
 				setTask(res.data);
 			} catch (error) {
 				alertHandler(true, error.response.data.message, "error");
+			} finally {
+				setOpenLoader(false);
 			}
 		}
 		getTask();

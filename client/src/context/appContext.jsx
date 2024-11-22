@@ -8,6 +8,7 @@ const AppProvider = ({ children }) => {
 		message: "",
 		type: ""
 	});
+	const [openLoader, setOpenLoader] = useState(false);
 	const [user, setUser] = useState(null);
 	const [userLoading, setUserLoading] = useState(true);
 
@@ -37,10 +38,12 @@ const AppProvider = ({ children }) => {
 				alert,
 				user,
 				userLoading,
+				openLoader,
 				alertHandler,
 				setUserData,
 				setUserLoading,
-				logoutUser
+				logoutUser,
+				setOpenLoader
 			}}>
 			{children}
 		</AppContext.Provider>

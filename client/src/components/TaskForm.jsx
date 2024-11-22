@@ -49,7 +49,7 @@ const TaskForm = ({
 	const [currentTask, setCurrentTask] = useState(task);
 	const [labels, setLabels] = useState(task?.labels || []); // List of tags
 	const [inputLabel, setInputLabel] = useState(""); // Input value for new tag
-	const { alertHandler } = useAppContext();
+	const { alertHandler, setOpenLoader } = useAppContext();
 
 	useEffect(() => {
 		if (!isNew) {
@@ -62,6 +62,7 @@ const TaskForm = ({
 
 	const onsubmit = async (data) => {
 		try {
+			setOpenLoader(true);
 			const res = isNew
 				? await serverInstance.post("tasks", {
 						...data,
@@ -80,11 +81,12 @@ const TaskForm = ({
 			}
 		} catch (error) {
 			alertHandler(true, error?.response?.data.message, "error");
+		} finally {
+			setOpenLoader(false);
 		}
 	};
 
 	const onreset = (taskData) => {
-		console.log(taskData);
 		setValue(taskFields.title, taskData.title);
 		setValue(taskFields.description, taskData.description);
 		setValue(taskFields.status, taskData.status);
@@ -97,6 +99,7 @@ const TaskForm = ({
 
 	const onAddComment = async () => {
 		try {
+			setOpenLoader(true);
 			const data = {
 				author: "test",
 				text: commentInput
@@ -110,6 +113,8 @@ const TaskForm = ({
 			alertHandler(true, "Added comment successfully!", "success");
 		} catch (error) {
 			alertHandler(true, error.response.data.message, "error");
+		} finally {
+			setOpenLoader(false);
 		}
 	};
 
@@ -224,7 +229,7 @@ const TaskForm = ({
 							</Button>
 							{commentList.length > 0 && (
 								<Stack gap={3}>
-									{commentList.reverse().map((comment) => (
+									{commentList.map((comment) => (
 										<CommentCard
 											key={comment._id}
 											{...comment}

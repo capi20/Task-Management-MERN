@@ -42,7 +42,6 @@ const TaskReminders = () => {
 
 		eventSource.onmessage = (event) => {
 			const remindersData = JSON.parse(event.data);
-			console.log(remindersData);
 			setReminders(remindersData);
 			setSnackbarOpen(true);
 		};
@@ -93,7 +92,7 @@ const TaskReminders = () => {
 											{reminder.title}
 										</Link>
 									</Typography>{" "}
-									-- {reminder.priority} Priority
+									-- {reminder.priority}
 								</Typography>
 							</ListItem>
 						))}

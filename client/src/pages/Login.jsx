@@ -1,4 +1,4 @@
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Button, Stack, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
 import Input from "../components/Input";
 import { useState } from "react";
@@ -24,7 +24,7 @@ const Login = () => {
 		defaultValues
 	});
 
-	const { alertHandler, setUserData } = useAppContext();
+	const { alertHandler, setUserData, setUserLoading } = useAppContext();
 	const navigate = useNavigate();
 
 	const toggleMember = () => {
@@ -38,8 +38,8 @@ const Login = () => {
 				`auth/${isMember ? "login" : "register"}`,
 				data
 			);
-			console.log(res);
 			setUserData({ email: res.data.email, name: res.data.name });
+			setUserLoading(false);
 			navigate("/");
 		} catch (error) {
 			alertHandler(true, error.response.data.message, "error");

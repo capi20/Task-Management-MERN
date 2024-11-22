@@ -33,7 +33,7 @@ const Home = () => {
 	const [checked, setChecked] = useState(false);
 	const [loading, setLoading] = useState(true);
 	const [isSearch, setIsSearch] = useState(false);
-	const { alertHandler, user } = useAppContext();
+	const { alertHandler, user, setOpenLoader } = useAppContext();
 
 	const handlePageChange = (event, value) => {
 		setPage(value);
@@ -56,14 +56,12 @@ const Home = () => {
 						: `tasks?page=${page}&limit=10`
 				);
 
-				setTimeout(() => {
-					setTasks(res.data?.tasks || []);
-					setTotalPages(res.data?.totalPages || 0);
-					setLoading(false);
-					if (searchFlag) {
-						setIsSearch(true);
-					}
-				}, 2000);
+				setTasks(res.data?.tasks || []);
+				setTotalPages(res.data?.totalPages || 0);
+				setLoading(false);
+				if (searchFlag) {
+					setIsSearch(true);
+				}
 			} catch (error) {
 				setLoading(false);
 				alertHandler(true, error.response.data.message, "error");
@@ -98,11 +96,14 @@ const Home = () => {
 
 	const onTaskDelete = async (taskId) => {
 		try {
+			setOpenLoader(true);
 			let res = await serverInstance.delete(`tasks/${taskId}`);
 			setReload(!reload);
 			alertHandler(true, "Task deleted successfully!", "success");
 		} catch (error) {
 			alertHandler(true, error.response.data.message, "error");
+		} finally {
+			setOpenLoader(false);
 		}
 	};
 
