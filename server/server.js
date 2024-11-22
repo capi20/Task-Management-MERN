@@ -19,8 +19,7 @@ import cookieParser from "cookie-parser";
 import taskRouter from "./routes/taskRoutes.js";
 import authRouter from "./routes/authRoutes.js";
 import authenticateUser from "./middleware/auth.js";
-// import Task from "./models/Task.js";
-// import { generateTasks } from "./dummyData.js";
+import { startScheduler } from "./scheduler/index.js";
 
 dotenv.config();
 const app = express();
@@ -56,16 +55,12 @@ app.use(errorHandlerMiddleware);
 
 const port = process.env.PORT || 5000;
 
-// const seedDatabase = async () => {
-// 	const tasks = generateTasks(100);
-// 	await Task.insertMany(tasks);
-// 	console.log("Database seeded with 100 tasks");
-// };
+// start task reminder scheduler
+startScheduler();
 
 const start = async () => {
 	try {
 		await connectDB(process.env.MONGO_URL);
-		// seedDatabase();
 		app.listen(port, () =>
 			console.log(`Server is listening on port ${port}...`)
 		);
