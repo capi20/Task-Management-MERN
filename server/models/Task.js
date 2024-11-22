@@ -34,6 +34,10 @@ const taskSchema = new mongoose.Schema(
 			type: String,
 			required: [true, "Due date is required"]
 		},
+		labels: {
+			type: [String], // Array of strings for labels/tags
+			default: []
+		},
 		comments: [
 			{
 				type: mongoose.Schema.Types.ObjectId,

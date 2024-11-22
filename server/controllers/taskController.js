@@ -6,17 +6,10 @@ import { StatusCodes } from "http-status-codes";
 // Create a new task
 export const createTask = async (req, res) => {
 	try {
-		const { title, description, status, priority, assignee, dueDate } =
-			req.body;
 		const creator = req.user.name;
 		const task = new Task({
-			title,
-			description,
-			status,
-			priority,
-			assignee,
-			creator,
-			dueDate
+			...req.body,
+			creator
 		});
 		await task.save();
 		res.status(StatusCodes.CREATED).json(task);

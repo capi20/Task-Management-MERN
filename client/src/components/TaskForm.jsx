@@ -11,17 +11,25 @@ import { useLocation, useNavigate } from "react-router-dom";
 import CommentCard from "./CommentCard";
 import { useAppContext } from "../context/appContext";
 import { serverInstance } from "../axiosInstances";
+import TaskLabels from "./TaskLabels";
 
 const defaultValues = {
-	[taskFields.name]: "",
+	[taskFields.title]: "",
 	[taskFields.description]: "",
 	[taskFields.status]: statusList[0],
 	[taskFields.priority]: "",
 	[taskFields.assignee]: "",
-	[taskFields.dueDate]: ""
+	[taskFields.dueDate]: "",
+	[taskFields.comment]: ""
 };
 
-const TaskForm = ({ task }) => {
+const TaskForm = ({
+	task = {
+		...defaultValues,
+		labels: [],
+		comments: []
+	}
+}) => {
 	const {
 		register,
 		handleSubmit,
@@ -37,8 +45,10 @@ const TaskForm = ({ task }) => {
 	const navigate = useNavigate();
 	const isNew = location.pathname === "/newTask" ? true : false;
 
-	const [commentList, setCommentList] = useState([]);
-	const [currentTask, setCurrentTask] = useState(defaultValues);
+	const [commentList, setCommentList] = useState(task?.comments || []);
+	const [currentTask, setCurrentTask] = useState(task);
+	const [labels, setLabels] = useState(task?.labels || []); // List of tags
+	const [inputLabel, setInputLabel] = useState(""); // Input value for new tag
 	const { alertHandler } = useAppContext();
 
 	useEffect(() => {
@@ -46,6 +56,7 @@ const TaskForm = ({ task }) => {
 			onreset(task);
 			setCurrentTask(task);
 			setCommentList(task?.comments || []);
+			setLabels(task.labels || []);
 		}
 	}, [task]);
 
@@ -53,9 +64,13 @@ const TaskForm = ({ task }) => {
 		try {
 			const res = isNew
 				? await serverInstance.post("tasks", {
-						...data
+						...data,
+						labels
 				  })
-				: await serverInstance.put(`tasks/${task._id}`, data);
+				: await serverInstance.put(`tasks/${task._id}`, {
+						...data,
+						labels
+				  });
 			if (isNew) {
 				alertHandler(true, "Task created successfully!", "success");
 				navigate("/");
@@ -68,13 +83,16 @@ const TaskForm = ({ task }) => {
 		}
 	};
 
-	const onreset = (taskObj) => {
-		setValue(taskFields.title, taskObj.title);
-		setValue(taskFields.description, taskObj.description);
-		setValue(taskFields.status, taskObj.status);
-		setValue(taskFields.priority, taskObj.priority);
-		setValue(taskFields.assignee, taskObj.assignee);
-		setValue(taskFields.dueDate, taskObj.dueDate);
+	const onreset = (taskData) => {
+		console.log(taskData);
+		setValue(taskFields.title, taskData.title);
+		setValue(taskFields.description, taskData.description);
+		setValue(taskFields.status, taskData.status);
+		setValue(taskFields.priority, taskData.priority);
+		setValue(taskFields.assignee, taskData.assignee);
+		setValue(taskFields.dueDate, taskData.dueDate);
+		setLabels(taskData.labels);
+		setInputLabel("");
 	};
 
 	const onAddComment = async () => {
@@ -126,7 +144,7 @@ const TaskForm = ({ task }) => {
 						</Stack>
 						<Input
 							type="textarea"
-							rows={7}
+							rows={11}
 							label="Description"
 							{...register(taskFields.description, {
 								required: true
@@ -152,13 +170,21 @@ const TaskForm = ({ task }) => {
 								error={errors[taskFields.assignee]}
 							/>
 						</Box>
-						<Input
-							type="date"
-							label="Due Date"
-							{...register(taskFields.dueDate, {
-								required: true
-							})}
-							error={errors[taskFields.dueDate]}
+						<Box mb={3}>
+							<Input
+								type="date"
+								label="Due Date"
+								{...register(taskFields.dueDate, {
+									required: true
+								})}
+								error={errors[taskFields.dueDate]}
+							/>
+						</Box>
+						<TaskLabels
+							labels={labels}
+							handleLabels={setLabels}
+							inputLabel={inputLabel}
+							handleInputLabel={setInputLabel}
 						/>
 					</Grid>
 					<Grid size={{ xs: 4, sm: 3, md: 2 }}>
