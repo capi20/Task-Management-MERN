@@ -3,6 +3,7 @@ import {
 	Card,
 	CardContent,
 	CardHeader,
+	Chip,
 	IconButton,
 	Stack,
 	Typography
@@ -23,6 +24,7 @@ const TaskCard = ({
 	updatedAt,
 	creator,
 	assignee,
+	labels,
 	navigateTo,
 	onTaskDelete
 }) => {
@@ -84,6 +86,13 @@ const TaskCard = ({
 							Due: {new Date(dueDate).toLocaleDateString()}
 						</Typography>
 					</Stack>
+					{labels.length > 0 && (
+						<Stack direction="row" flexWrap="wrap" gap={1}>
+							{labels.map((label) => (
+								<Chip label={label} />
+							))}
+						</Stack>
+					)}
 					<Stack
 						gap={0.5}
 						direction="row"
