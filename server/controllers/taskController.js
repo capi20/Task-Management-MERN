@@ -32,7 +32,10 @@ export const getTasks = async (req, res) => {
 		const skip = (pageNumber - 1) * limitNumber;
 
 		// Fetch tasks with pagination
-		const tasks = await Task.find().skip(skip).limit(limitNumber);
+		const tasks = await Task.find()
+			.sort({ dueDate: 1 })
+			.skip(skip)
+			.limit(limitNumber);
 
 		// Get the total count of tasks
 		const totalTasks = await Task.countDocuments();
@@ -57,7 +60,10 @@ export const getTasks = async (req, res) => {
 // Get a single task by ID
 export const getTaskById = async (req, res) => {
 	try {
-		const task = await Task.findById(req.params.id).populate("comments");
+		const task = await Task.findById(req.params.id).populate({
+			path: "comments",
+			options: { sort: { createdAt: -1 } }
+		});
 		if (!task) {
 			return res
 				.status(StatusCodes.NOT_FOUND)
@@ -152,7 +158,10 @@ export const searchTasks = async (req, res) => {
 			filter.assignee = assignee; // Exact match
 		}
 
-		const tasks = await Task.find(filter).skip(skip).limit(limitNumber);
+		const tasks = await Task.find(filter)
+			.sort({ dueDate: 1 })
+			.skip(skip)
+			.limit(limitNumber);
 
 		// Get the total count of tasks
 		const totalTasks = await Task.countDocuments(filter);

@@ -60,5 +60,5 @@ export const getCurrentUser = async (req, res) => {
 export const logout = async (req, res) => {
 	attachCookies(res, "logout", 5 * 1000);
 
-	res.status(StatusCodes.OK).json({ msg: "user logged out!" });
+	res.status(StatusCodes.OK).json({ message: "Logged out successfully!" });
 };
