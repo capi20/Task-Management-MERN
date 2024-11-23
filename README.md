@@ -13,8 +13,8 @@ This is a full-featured **Task Management Application** built using the **MERN s
 
 ### Task Management
 - #### Add & Edit Tasks:
-  - Users can create tasks with mandatory fields like title, description, priority, due date, and assignee.
-  - Built-in validations ensure that due dates and assignee names are valid.
+  - Users can create tasks with mandatory fields like title, description, priority, due date, and assignee. By default status will be Todo.
+  - Built-in server validations ensure that due dates and assignee names are valid.
 - #### Delete Tasks:
   - Only the creator of a task can delete it for secure task management.
 - #### Labels/Tags:
@@ -23,6 +23,7 @@ This is a full-featured **Task Management Application** built using the **MERN s
 ### Comments
 - Add comments to any task for better collaboration.
 - Only the comment creator can edit or delete their comments.
+- Comments are always sorted in a created-at-first order for better readability.
 
 ### Dashboard
 - Tasks are listed with pagination for efficient browsing and management.
@@ -30,14 +31,14 @@ This is a full-featured **Task Management Application** built using the **MERN s
 
 ### Filtering & Sorting
 - Powerful task filtering options:
-- By title, priority, status, due date, or assignee.
+  - By title, priority, status, due date, or assignee.
 - Tasks are always sorted in a due-date-first order for better prioritization.
 
 ### Due Date Alerts
 - Real-time alerts for tasks due today:
-- Implemented Server-Sent Events (SSE) to maintain a live connection between the server and client.
-- A cron scheduler on the server runs every 2 minutes to send alerts for tasks due today.
-- Alerts are sent to the correct assignees in real-time.
+  - Implemented Server-Sent Events (SSE) to maintain a live connection between the server and client.
+  - A cron scheduler on the server runs every 30 minutes to send alerts for tasks due today.
+  - Alerts are sent to the correct assignees in real-time.
 
 ### User APIs
 - Core user-related functionalities implemented:
@@ -57,21 +58,21 @@ This is a full-featured **Task Management Application** built using the **MERN s
 
 ### 📦 API Endpoints
 ### Authentication
-- **POST `/api/auth/register`** - Register a new user.
-- **POST `/api/auth/login`** - Log in an existing user.
+- **POST `/api/auth/register`** - Register a new user. {name, email, password}
+- **POST `/api/auth/login`** - Log in an existing user. {email, password}
 - **GET `/api/auth/logout`** - Log out the current user.
 - **GET `/api/auth/getCurrentUser`** - Fetch the currently logged-in user.
 ### Tasks
-- **GET `/api/tasks`** - Fetch all tasks with pagination.
-- **GET `/api/tasks/search`** - Fetch all tasks with filtering and pagination.
-- **POST `/api/tasks`** - Add a new task with optional labels/tags.
+- **GET `/api/tasks?page=1&limit=10`** - Fetch all tasks with pagination.
+- **GET `/api/tasks/search?page=1&limit=10&title=abc`** - Fetch all tasks with filtering and pagination.
+- **POST `/api/tasks`** - Add a new task with optional labels/tags. {title, description, priority, dueDate, assignee, labels: []}
 - **GET `/api/tasks/:id`** - Get a task.
 - **PUT `/api/tasks/:id`** - Edit a task.
 - **DELETE `/api/tasks/:id`** - Delete a task (only by creator).
 ### Comments
-- **POST `/api/tasks/comments`** - Add a comment to a task.
-- **PUT `/api/tasks/comments/`** - Edit a comment (only by creator).
-- **DELETE `/api/tasks/:id/comments/:commentId`** - Delete a comment (only by creator). (/:id is task id)
+- **POST `/api/tasks/comments`** - Add a comment to a task. {taskId, text}
+- **PUT `/api/tasks/comments/`** - Edit a comment (only by creator). {commentId, text}
+- **DELETE `/api/tasks/:id/comments/:commentId`** - Delete a comment (only by creator). (Here /:id is task id)
 ### Real-Time Alerts
 - **GET `/api/reminders`** - Establishes an SSE connection for receiving real-time due date reminders.
 
@@ -81,7 +82,7 @@ This is a full-featured **Task Management Application** built using the **MERN s
 ### 1. Clone the repository
 ```
 
-git clone https://github.com/capi20/Task-Management-MERN
+git clone https://github.com/capi20/Task-Management-MERN.git
 
 ```
 ### 2. Navigate to the project directory
@@ -119,21 +120,21 @@ PORT=5000
 ```
 
 ### 5. Start the application
-- Run below command to start client and server concurrently
+- Run frontend and backend server concurrently
 ```
 
 cd server
 npm start
 
 ```
-- Run only server
+- Run only backend server
 ```
 
 cd server
 npm run server
 
 ```
-- Run only client
+- Run only frontend client
 ```
 
 cd client
