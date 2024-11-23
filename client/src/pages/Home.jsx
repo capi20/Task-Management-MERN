@@ -62,7 +62,7 @@ const Home = () => {
 					priority !== "" ? `priority=${priority}&` : "";
 				let searchStatus = status !== "" ? `status=${status}&` : "";
 				let searchDueDate = dueDate !== "" ? `dueDate=${dueDate}&` : "";
-				let searchAssignee = checked ? `assignee=${user.name}&` : "";
+				let searchAssignee = checked ? `assignee=${user.email}&` : "";
 				let res = await serverInstance(
 					searchFlag
 						? `tasks/search?page=${page}&limit=10&${searchTitle}${searchPriority}${searchStatus}${searchDueDate}${searchAssignee}`
