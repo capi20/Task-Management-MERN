@@ -10,11 +10,12 @@ import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 import cors from "cors";
 
+//security
 import helmet from "helmet";
 import xss from "xss-clean";
 import mongoSanitize from "express-mongo-sanitize";
 import cookieParser from "cookie-parser";
-
+import rateLimiter from "express-rate-limit";
 //routers
 import taskRouter from "./routes/taskRoutes.js";
 import authRouter from "./routes/authRoutes.js";
@@ -28,6 +29,15 @@ if (process.env.NODE_ENV !== "production") {
 	app.use(morgan("dev"));
 }
 
+const apiLimiter = rateLimiter({
+	windowMs: 1 * 60 * 1000,
+	max: 8,
+	message: {
+		status: 429,
+		message: "Too many requests, please try again later."
+	}
+});
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use(express.static(path.resolve(__dirname, "../client/dist")));
 
@@ -37,6 +47,8 @@ app.use(
 		credentials: true // Allow cookies
 	})
 );
+
+app.use(apiLimiter);
 app.use(express.json());
 app.use(cookieParser());
 app.use(helmet());
