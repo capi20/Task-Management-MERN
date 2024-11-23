@@ -22,14 +22,20 @@ This is a full-featured **Task Management Application** built using the **MERN s
 - #### Labels/Tags:
   - Users can assign multiple labels/tags to tasks for better categorization.
  
+    <img src="screenshots/edittask.png" alt="edit task" width="600" height="300">
+ 
 ### Comments
 - Add comments to any task for better collaboration.
 - Only the comment creator can edit or delete their comments.
 - Comments are always sorted in a created-at-first order for better readability.
 
+  <img src="screenshots/comments.png" alt="comments" width="400" height="350">
+
 ### Dashboard
 - Tasks are listed with pagination for efficient browsing and management.
 - Tasks are displayed in descending order of due date, showing the most urgent tasks first.
+  
+  <img src="screenshots/dashboard.png" alt="Task Management Dashboard" width="700" height="350">
 
 ### Filtering & Sorting
 - Powerful task filtering options:
@@ -41,10 +47,14 @@ This is a full-featured **Task Management Application** built using the **MERN s
   - Implemented Server-Sent Events (SSE) to maintain a live connection between the server and client.
   - A cron scheduler on the server runs after every interval to send alerts for tasks due today.
   - Alerts are sent to the correct assignees in real-time.
+ 
+    <img src="screenshots/alerts.png" alt="alerts" width="700" height="350">
 
 ### User APIs
 - Core user-related functionalities implemented:
   - Sign Up, Login, Logout, and Get Current User APIs.
+ 
+    <img src="screenshots/login.png" alt="login" width="400" height="350">
  
 -------
  
