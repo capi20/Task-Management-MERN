@@ -14,7 +14,7 @@ export const sendReminders = (req, res) => {
 	// Add client to the connected list with user info
 	const clientInfo = {
 		res,
-		userId: req.user.name // adding user name
+		userEmail: req.user.userEmail // adding user email
 	};
 	connectedClients.push(clientInfo);
 
@@ -49,15 +49,15 @@ export const startScheduler = () => {
 					return acc;
 				}, {});
 
-				// Send reminders to connected clients based on their userId
+				// Send reminders to connected clients based on their userEmail
 				connectedClients.forEach((client) => {
-					const userId = client.userId;
+					const userEmail = client.userEmail;
 
 					// Check if there are reminders for this user
-					if (remindersByAssignee[userId]) {
+					if (remindersByAssignee[userEmail]) {
 						client.res.write(
 							`data: ${JSON.stringify(
-								remindersByAssignee[userId]
+								remindersByAssignee[userEmail]
 							)}\n\n`
 						);
 					}
