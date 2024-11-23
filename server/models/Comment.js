@@ -11,6 +11,11 @@ const commentSchema = new mongoose.Schema(
 			type: String, // You can use userID or username
 			required: [true, "Author is required"]
 		},
+		authorId: {
+			type: String, // You can use userID or username
+			required: [true, "Author Id is required"],
+			select: false
+		},
 		text: {
 			type: String,
 			required: [true, "Comment is required"],

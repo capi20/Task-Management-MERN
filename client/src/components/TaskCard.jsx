@@ -5,17 +5,11 @@ import {
 	CardHeader,
 	Chip,
 	IconButton,
-	Menu,
-	MenuItem,
 	Stack,
 	Typography
 } from "@mui/material";
-import { Link, useNavigate } from "react-router-dom";
 import { priorityList, statusList } from "../constants";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import MoreVertOutlinedIcon from "@mui/icons-material/MoreVertOutlined";
-import { useState } from "react";
 
 const TaskCard = ({
 	_id,

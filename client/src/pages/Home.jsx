@@ -249,32 +249,34 @@ const Home = () => {
 				</Typography>
 			)}
 			{loading && <Loader />}
-			<Menu
-				anchorEl={anchorEl}
-				open={openMenu}
-				onClose={handleMenuClose}
-				transformOrigin={{
-					vertical: "top",
-					horizontal: "center"
-				}}
-				anchorOrigin={{
-					vertical: "bottom",
-					horizontal: "left"
-				}}>
-				<MenuItem
-					onClick={() => {
-						navigate(`/task/${taskClicked}`);
+			{tasks.length > 0 && (
+				<Menu
+					anchorEl={anchorEl}
+					open={openMenu}
+					onClose={handleMenuClose}
+					transformOrigin={{
+						vertical: "top",
+						horizontal: "center"
+					}}
+					anchorOrigin={{
+						vertical: "bottom",
+						horizontal: "left"
 					}}>
-					Edit
-				</MenuItem>
-				<MenuItem
-					onClick={() => {
-						onTaskDelete(taskClicked);
-						handleMenuClose();
-					}}>
-					Delete
-				</MenuItem>
-			</Menu>
+					<MenuItem
+						onClick={() => {
+							navigate(`/task/${taskClicked}`);
+						}}>
+						Edit
+					</MenuItem>
+					<MenuItem
+						onClick={() => {
+							onTaskDelete(taskClicked);
+							handleMenuClose();
+						}}>
+						Delete
+					</MenuItem>
+				</Menu>
+			)}
 		</>
 	);
 };

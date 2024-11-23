@@ -12,6 +12,7 @@ import CommentCard from "./CommentCard";
 import { useAppContext } from "../context/appContext";
 import { serverInstance } from "../axiosInstances";
 import TaskLabels from "./TaskLabels";
+import CommentSection from "./CommentSection";
 
 const defaultValues = {
 	[taskFields.title]: "",
@@ -19,8 +20,7 @@ const defaultValues = {
 	[taskFields.status]: statusList[0],
 	[taskFields.priority]: "",
 	[taskFields.assignee]: "",
-	[taskFields.dueDate]: "",
-	[taskFields.comment]: ""
+	[taskFields.dueDate]: ""
 };
 
 const TaskForm = ({
@@ -45,7 +45,6 @@ const TaskForm = ({
 	const navigate = useNavigate();
 	const isNew = location.pathname === "/newTask" ? true : false;
 
-	const [commentList, setCommentList] = useState(task?.comments || []);
 	const [currentTask, setCurrentTask] = useState(task);
 	const [labels, setLabels] = useState(task?.labels || []); // List of tags
 	const [inputLabel, setInputLabel] = useState(""); // Input value for new tag
@@ -55,7 +54,6 @@ const TaskForm = ({
 		if (!isNew) {
 			onreset(task);
 			setCurrentTask(task);
-			setCommentList(task?.comments || []);
 			setLabels(task.labels || []);
 		}
 	}, [task]);
@@ -95,27 +93,6 @@ const TaskForm = ({
 		setValue(taskFields.dueDate, taskData.dueDate);
 		setLabels(taskData.labels);
 		setInputLabel("");
-	};
-
-	const onAddComment = async () => {
-		try {
-			setOpenLoader(true);
-			const data = {
-				author: "test",
-				text: commentInput
-			};
-			const res = await serverInstance.post(
-				`tasks/${task._id}/comments`,
-				data
-			);
-			setValue(taskFields.comment, "");
-			setCommentList([res.data, ...commentList]);
-			alertHandler(true, "Added comment successfully!", "success");
-		} catch (error) {
-			alertHandler(true, error.response.data.message, "error");
-		} finally {
-			setOpenLoader(false);
-		}
 	};
 
 	return (
@@ -210,35 +187,10 @@ const TaskForm = ({
 					</Grid>
 				</Grid>
 				{!isNew && (
-					<>
-						<Typography variant="h6" fontWeight={700} mt={6} mb={2}>
-							Comments
-						</Typography>
-						<Stack maxWidth={600} gap={3}>
-							<Input
-								type="textarea"
-								placeholder="Write a comment"
-								rows={6}
-								{...register(taskFields.comment)}
-							/>
-							<Button
-								disabled={!commentInput || commentInput === ""}
-								variant="contained"
-								onClick={onAddComment}>
-								Add Comment
-							</Button>
-							{commentList.length > 0 && (
-								<Stack gap={3}>
-									{commentList.map((comment) => (
-										<CommentCard
-											key={comment._id}
-											{...comment}
-										/>
-									))}
-								</Stack>
-							)}
-						</Stack>
-					</>
+					<CommentSection
+						taskId={task?._id}
+						commentList={task.comments || []}
+					/>
 				)}
 			</SectionWrapper>
 		</Stack>

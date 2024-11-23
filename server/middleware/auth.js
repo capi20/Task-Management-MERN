@@ -15,7 +15,10 @@ const auth = async (req, res, next) => {
 				"Invalid token. User does not exist."
 			);
 		}
-		req.user = user;
+		req.user = {
+			userId: payload.userId,
+			userName: user.name
+		};
 		next();
 	} catch (error) {
 		throw new UnauthenticatedError("Invalid or expired token");

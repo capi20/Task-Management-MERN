@@ -7,7 +7,11 @@ import {
 	deleteTask,
 	searchTasks
 } from "../controllers/taskController.js";
-import { addCommentToTask } from "../controllers/commentController.js";
+import {
+	addCommentToTask,
+	deleteComment,
+	editComment
+} from "../controllers/commentController.js";
 import { sendReminders } from "../scheduler/index.js";
 
 const router = express.Router();
@@ -24,6 +28,12 @@ router.get("/search", searchTasks);
 // Send task reminders
 router.get("/reminders", sendReminders);
 
+// Add comment to a task
+router.post("/comments", addCommentToTask);
+
+// Edit a comment by ID
+router.put("/comments", editComment);
+
 // Get a single task by ID
 router.get("/:id", getTaskById);
 
@@ -33,7 +43,7 @@ router.put("/:id", updateTask);
 // Delete a task by ID
 router.delete("/:id", deleteTask);
 
-// Add comment to a task
-router.post("/:id/comments", addCommentToTask);
+// Delete a comment by ID
+router.delete("/:id/comments/:commentId", deleteComment);
 
 export default router;
