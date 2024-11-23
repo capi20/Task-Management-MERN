@@ -2,15 +2,54 @@
 import Comment from "../models/Comment.js";
 import Task from "../models/Task.js";
 import { StatusCodes } from "http-status-codes";
+import checkPermissions from "../utils/checkPermissions.js";
+import User from "../models/User.js";
+import { BadRequestError, NotFoundError } from "../errors/index.js";
+
+// check due date is not a past date
+const checkDueDate = (dueDate) => {
+	const selectedDate = new Date(dueDate);
+	const today = new Date();
+
+	today.setHours(0, 0, 0, 0);
+
+	if (selectedDate < today) {
+		throw new BadRequestError("Due date can not be a past date.");
+	} else {
+		return;
+	}
+};
+
+const checkAssignee = async (assignee) => {
+	let assigneeData = await User.findOne({ email: assignee.toLowerCase() });
+	if (!assigneeData) {
+		throw new NotFoundError("Please provide a valid assignee email id");
+	} else {
+		return assigneeData;
+	}
+};
 
 // Create a new task
 export const createTask = async (req, res) => {
-	const creator = req.user.name;
+	let { assignee, dueDate } = req.body;
+
+	checkDueDate(dueDate);
+
+	const assigneeData = await checkAssignee(assignee);
+
+	const creator = req.user.userEmail;
+	const creatorName = req.user.userName;
+	const creatorId = req.user.userId;
 	const task = new Task({
 		...req.body,
-		creator
+		creator,
+		creatorName,
+		creatorId,
+		assignee: assigneeData.email,
+		assigneeName: assigneeData.name
 	});
 	await task.save();
+	task.creatorId = null;
 	res.status(StatusCodes.CREATED).json(task);
 };
 
@@ -63,6 +102,18 @@ export const getTaskById = async (req, res) => {
 
 // Update a task by ID
 export const updateTask = async (req, res) => {
+	const { assignee, dueDate } = req.body;
+
+	if (dueDate) {
+		checkDueDate(dueDate);
+	}
+
+	if (assignee) {
+		const assigneeData = await checkAssignee(assignee);
+		req.body.assigneeName = assigneeData.name;
+		req.body.assignee = assigneeData.email;
+	}
+
 	const task = await Task.findByIdAndUpdate(req.params.id, req.body, {
 		new: true
 	});
@@ -74,13 +125,20 @@ export const updateTask = async (req, res) => {
 
 // Delete a task by ID
 export const deleteTask = async (req, res) => {
-	const task = await Task.findByIdAndDelete(req.params.id);
+	const taskId = req.params.id;
+
+	const task = await Task.findById(taskId).select("+creatorId");
 	if (!task) {
 		return res
 			.status(StatusCodes.NOT_FOUND)
 			.json({ message: "Task not found" });
 	}
-	await Comment.deleteMany({ taskId: req.params.id });
+
+	checkPermissions(req.user.userId, task.creatorId);
+
+	await Task.deleteOne({ _id: taskId });
+	await Comment.deleteMany({ taskId: taskId });
+
 	res.status(StatusCodes.OK).json({
 		message: "Task deleted successfully"
 	});

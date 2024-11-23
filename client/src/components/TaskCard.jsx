@@ -20,8 +20,8 @@ const TaskCard = ({
 	dueDate,
 	createdAt,
 	updatedAt,
-	creator,
-	assignee,
+	creatorName,
+	assigneeName,
 	labels,
 	handleMenuClick
 }) => {
@@ -96,10 +96,10 @@ const TaskCard = ({
 						justifyContent="space-between">
 						<Stack>
 							<Typography variant="body2" color="grey">
-								Created by: {creator}
+								Created by: {creatorName}
 							</Typography>
 							<Typography variant="body2" color="grey">
-								Assigned to: {assignee}
+								Assigned to: {assigneeName}
 							</Typography>
 						</Stack>
 						<Stack alignItems="flex-end">

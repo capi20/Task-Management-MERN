@@ -4,7 +4,8 @@ import { BadRequestError, UnauthenticatedError } from "../errors/index.js";
 import attachCookies from "../utils/attachCookies.js";
 
 export const register = async (req, res, next) => {
-	const { name, email, password } = req.body;
+	let { name, email, password } = req.body;
+	email = email.toLowerCase();
 
 	if (!email || !name || !password) {
 		throw new BadRequestError(
@@ -24,7 +25,8 @@ export const register = async (req, res, next) => {
 };
 
 export const login = async (req, res) => {
-	const { email, password } = req.body;
+	let { email, password } = req.body;
+	email = email.toLowerCase();
 
 	if (!email || !password) {
 		throw new BadRequestError(
@@ -52,8 +54,8 @@ export const login = async (req, res) => {
 
 export const getCurrentUser = async (req, res) => {
 	res.status(StatusCodes.OK).json({
-		name: req.user.name,
-		email: req.user.email
+		name: req.user.userName,
+		email: req.user.userEmail
 	});
 };
 
