@@ -81,6 +81,7 @@ const TaskReminders = () => {
 								<Typography variant="body1">
 									<Typography
 										variant="body1"
+										fontSize={18}
 										component="span"
 										fontWeight={700}>
 										<Link
@@ -92,7 +93,8 @@ const TaskReminders = () => {
 											{reminder.title}
 										</Link>
 									</Typography>{" "}
-									-- {reminder.priority}
+									-- {reminder.priority} priority --{" "}
+									{reminder.status}
 								</Typography>
 							</ListItem>
 						))}
