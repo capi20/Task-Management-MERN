@@ -13,7 +13,9 @@ This is a full-featured **Task Management Application** built using the **MERN s
 
 ### Task Management
 - #### Add & Edit Tasks:
-  - Users can create tasks with mandatory fields like title, description, priority, due date, and assignee. By default status will be Todo.
+  - Users can create tasks with mandatory fields like title, description, priority, due date, and assignee.
+  - Task status is optional and by default it will be "Todo".
+  - Creator details will be added at the backend after validating user (JWT verify).
   - Built-in server validations ensure that due dates and assignee names are valid.
 - #### Delete Tasks:
   - Only the creator of a task can delete it for secure task management.
@@ -37,7 +39,7 @@ This is a full-featured **Task Management Application** built using the **MERN s
 ### Due Date Alerts
 - Real-time alerts for tasks due today:
   - Implemented Server-Sent Events (SSE) to maintain a live connection between the server and client.
-  - A cron scheduler on the server runs every 30 minutes to send alerts for tasks due today.
+  - A cron scheduler on the server runs after every interval to send alerts for tasks due today.
   - Alerts are sent to the correct assignees in real-time.
 
 ### User APIs
@@ -58,20 +60,96 @@ This is a full-featured **Task Management Application** built using the **MERN s
 
 ### 📦 API Endpoints
 ### Authentication
-- **POST `/api/auth/register`** - Register a new user. {name, email, password}
-- **POST `/api/auth/login`** - Log in an existing user. {email, password}
+- **POST `/api/auth/register`** - Register a new user.
+  
+   - Request Body:
+     ```
+     {
+       "name": "test user",
+       "email": "test@example.com",
+       "password": "strongpassword123"
+     }
+    ```
+- **POST `/api/auth/login`** - Log in an existing user.
+  
+    - Request Body:
+      ```
+      {
+        "email": "test@example.com",
+        "password": "strongpassword123"
+      }
+      ```
 - **GET `/api/auth/logout`** - Log out the current user.
 - **GET `/api/auth/getCurrentUser`** - Fetch the currently logged-in user.
 ### Tasks
 - **GET `/api/tasks?page=1&limit=10`** - Fetch all tasks with pagination.
-- **GET `/api/tasks/search?page=1&limit=10&title=abc`** - Fetch all tasks with filtering and pagination.
-- **POST `/api/tasks`** - Add a new task with optional labels/tags. {title, description, priority, dueDate, assignee, labels: []}
+
+    - Query Parameters (optional):
+      ```
+        page=1
+        limit=10
+      ```
+- **GET `/api/tasks/search`** - Fetch all tasks with filtering and pagination.
+
+    - Query Parameters (at least one param is required except page and limit):
+      ```
+        title=task1
+        priority=High
+        status=In Progress
+        dueDate=2024-11-23
+        assignee=test@example.com
+        page=1
+        limit=10
+      ```
+- **POST `/api/tasks`** - Add a new task with optional labels/tags.
+
+    - Request Body:
+      ```
+      {
+        "title": "Fix Bugs in Dashboard",
+        "description": "Resolve the UI glitches in the dashboard section.",
+        "dueDate": "2024-11-23",
+        "assignee": "test@example.com",
+        "priority": "High",
+        "status": "In Progress",
+        "labels": ["UI", "Bug Fix"]
+      }
+      ```
 - **GET `/api/tasks/:id`** - Get a task.
 - **PUT `/api/tasks/:id`** - Edit a task.
+
+    - Request Body:
+      ```
+      {
+        "title": "Fix Bugs in Dashboard",
+        "description": "Resolve the UI glitches in the dashboard section.",
+        "dueDate": "2024-11-23",
+        "assignee": "test@example.com",
+        "priority": "High",
+        "status": "In Progress",
+        "labels": ["UI", "Bug Fix"]
+      }
+      ```
 - **DELETE `/api/tasks/:id`** - Delete a task (only by creator).
 ### Comments
-- **POST `/api/tasks/comments`** - Add a comment to a task. {taskId, text}
-- **PUT `/api/tasks/comments/`** - Edit a comment (only by creator). {commentId, text}
+- **POST `/api/tasks/comments`** - Add a comment to a task.
+
+    - Request Body:
+      ```
+      {
+        "taskId": "123456",
+        "text": "This task is critical and needs to be addressed ASAP."
+      }
+      ```
+- **PUT `/api/tasks/comments/`** - Edit a comment (only by creator).
+
+    - Request Body:
+      ```
+      {
+        "commentId": "123456",
+        "text": "This task is critical and needs to be addressed ASAP."
+      }
+      ```
 - **DELETE `/api/tasks/:id/comments/:commentId`** - Delete a comment (only by creator). (Here /:id is task id)
 ### Real-Time Alerts
 - **GET `/api/reminders`** - Establishes an SSE connection for receiving real-time due date reminders.
