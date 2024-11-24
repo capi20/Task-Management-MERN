@@ -3,7 +3,7 @@
 ### Live demo https://task-management-mern-prod.onrender.com/
 
 ### 📚 Project Overview
-This is a full-featured **Task Management Application** built using the **MERN stack** (MongoDB, Express.js, React, Node.js). It enables users to create, manage, and filter tasks efficiently while ensuring secure access and personalized functionality. The project is designed with **JWT-based authentication**, a live **due-date alert system**, and user-friendly interfaces.
+This is a full-featured **Task Management Application** built using the **MERN stack** (MongoDB, Express.js, React, Node.js). It enables users to create, manage, and filter tasks efficiently while ensuring secure access and personalized functionality. The project is designed with **JWT-based authentication**, a live **due-date alert system**, and user-friendly interfaces. Additionally, the application is **fully optimized for mobile devices**, providing a seamless experience across all screen sizes. Users can also **visualize task statistics** through dynamic charts, making it easier to track task distribution and progress."
 
 ---
 
@@ -51,6 +51,14 @@ This is a full-featured **Task Management Application** built using the **MERN s
   - Alerts are sent to the correct assignees in real-time.
  
     <img src="screenshots/alerts.png" alt="alerts" width="700" height="350">
+    
+### Task Stats
+- Visualize task statistics for better tracking and analysis:
+    - Provides insights into task distribution based on priority and status.
+    - The user can view the number of tasks categorized by priority (Low, Medium, High) and by status (ToDo, In Progress, Done).
+    - Stats help users monitor task progress and workload effectively.
+ 
+      <img src="screenshots/charts.png" alt="charts" width="700" height="350">
 
 ### User APIs
 - Core user-related functionalities implemented:
@@ -73,15 +81,15 @@ This is a full-featured **Task Management Application** built using the **MERN s
 ### 📦 API Endpoints
 ### Authentication
 - **POST `/api/auth/register`** - Register a new user.
-  
-   - Request Body:
-     ```
-     {
-       "name": "test user",
-       "email": "test@example.com",
-       "password": "strongpassword123"
-     }
-    ```
+
+    - Request Body:
+      ```
+      {
+        "name": "test user",
+        "email": "test@example.com",
+        "password": "strongpassword123"
+      }
+      ```
 - **POST `/api/auth/login`** - Log in an existing user.
   
     - Request Body:
@@ -94,7 +102,7 @@ This is a full-featured **Task Management Application** built using the **MERN s
 - **GET `/api/auth/logout`** - Log out the current user.
 - **GET `/api/auth/getCurrentUser`** - Fetch the currently logged-in user.
 ### Tasks
-- **GET `/api/tasks?page=1&limit=10`** - Fetch all tasks with pagination.
+- **GET `/api/tasks`** - Fetch all tasks with pagination.
 
     - Query Parameters (optional):
       ```
@@ -113,6 +121,13 @@ This is a full-featured **Task Management Application** built using the **MERN s
         page=1
         limit=10
       ```
+- **GET `/api/tasks/getStats`** - Fetch tasks statistics.
+
+    - Query Parameters (optional):
+      ```
+        "assignedMe": "true
+      ```
+- **GET `/api/tasks/:id`** - Get a task.
 - **POST `/api/tasks`** - Add a new task with optional labels/tags.
 
     - Request Body:
@@ -127,7 +142,6 @@ This is a full-featured **Task Management Application** built using the **MERN s
         "labels": ["UI", "Bug Fix"]
       }
       ```
-- **GET `/api/tasks/:id`** - Get a task.
 - **PUT `/api/tasks/:id`** - Edit a task.
 
     - Request Body:
@@ -262,9 +276,10 @@ task-management-app
 ### 🌟 Key Highlights
 - **Secure APIs:** User authentication and creator based access ensure data privacy.
 - **Real-Time Functionality:** Due date alerts powered by SSE and cron jobs.
+- **Visualize Task Stats:** Visualize task stats through dynamic charts.
 - **Custom Labels:** Personalize tasks with labels/tags.
 - **Scalability:** Designed for large-scale usage with robust pagination, filtering, and sorting features.
-- **Responsive UI:** Built with Material-UI for a modern and intuitive user experience.
+- **Responsive UI:** Built with Material-UI for a modern, mobile optimized and intuitive user experience.
 
 --- 
 
