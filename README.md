@@ -187,64 +187,63 @@ This is a full-featured **Task Management Application** built using the **MERN s
 ```
 
 git clone https://github.com/capi20/Task-Management-MERN.git
-
 ```
 ### 2. Navigate to the project directory
 ```
 
 cd Task-Management-MERN
-
 ```
 ### 3. Install dependencies
 - For the backend:
-```
-
-cd server
-npm install
-
-```
+  ```
+  
+  cd server
+  npm install
+  ```
 - For the frontend:
-```
-
-cd client
-npm install
-
-```
+  ```
+  
+  cd client
+  npm install
+  ```
 ### 4. Configure environment variables
 - Create a .env file in the server directory.
 - Add the following:
-```
-
-MONGO_URL=<Your MongoDB Connection String>
-JWT_SECRET=<Your Secret Key>
-JWT_LIFETIME=1d
-NODE_ENV=development
-PORT=5000
-
-```
+  ```
+  
+  MONGO_URL=<Your MongoDB Connection String>
+  JWT_SECRET=<Your Secret Key>
+  JWT_LIFETIME=1d
+  NODE_ENV=development
+  PORT=5000
+  ```
 
 ### 5. Start the application
 - Run frontend and backend server concurrently
-```
-
-cd server
-npm start
-
-```
+  ```
+  
+  cd server
+  npm start
+  ```
 - Run only backend server
-```
-
-cd server
-npm run server
-
-```
+  ```
+  
+  cd server
+  npm run server
+  ```
 - Run only frontend client
-```
-
-cd client
-npm run dev
-
-```
+  ```
+  
+  cd client
+  npm run dev
+  ```
+### 6. Run unit test cases
+- Run backend unit test cases
+  ```
+  
+  cd server
+  npm run test
+  ```
 ---
 
 ### 📂 Folder Structure
