@@ -125,7 +125,7 @@ This is a full-featured **Task Management Application** built using the **MERN s
 
     - Query Parameters (optional):
       ```
-        "assignedMe": "true
+        "assignee": "test@test.com"
       ```
 - **GET `/api/tasks/:id`** - Get a task.
 - **POST `/api/tasks`** - Add a new task with optional labels/tags.
