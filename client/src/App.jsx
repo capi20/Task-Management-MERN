@@ -1,6 +1,5 @@
-import Home from "./pages/Home";
 import NewTask from "./pages/NewTask";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import TaskDetails from "./pages/TaskDetails";
 import { AppProvider } from "./context/appContext";
 import AppLayout from "./components/AppLayout";
@@ -8,6 +7,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 import CustomAlert from "./components/CustomAlert";
 import TaskReminders from "./pages/Reminders";
+import TaskStats from "./pages/TaskStats";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
 	return (
@@ -20,12 +21,14 @@ function App() {
 							<AppLayout />
 						</ProtectedRoute>
 					}>
-					<Route index element={<Home />} />
+					<Route index element={<Dashboard />} />
 					<Route path="/newTask" element={<NewTask />} />
 					<Route path="/task/:id" element={<TaskDetails />} />
 					<Route path="/reminders" element={<TaskReminders />} />
+					<Route path="/stats" element={<TaskStats />} />
 				</Route>
 				<Route path="/login" element={<Login />} />
+				<Route path="*" element={<Navigate to="/" />} />
 			</Routes>
 			<CustomAlert />
 		</AppProvider>

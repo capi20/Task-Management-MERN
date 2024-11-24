@@ -6,7 +6,7 @@ const PageHeading = ({ title, children }) => {
 			direction="row"
 			justifyContent="space-between"
 			alignItems="center"
-			my={5}>
+			my={{ xs: 3, sm: 5 }}>
 			<Typography variant="h5" fontWeight={700}>
 				{title}
 			</Typography>

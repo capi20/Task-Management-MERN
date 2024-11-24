@@ -5,7 +5,8 @@ import {
 	getTaskById,
 	updateTask,
 	deleteTask,
-	searchTasks
+	searchTasks,
+	getTaskStats
 } from "../controllers/taskController.js";
 import {
 	addCommentToTask,
@@ -33,6 +34,9 @@ router.post("/comments", addCommentToTask);
 
 // Edit a comment by ID
 router.put("/comments", editComment);
+
+// Edit a comment by ID
+router.get("/getStats", getTaskStats);
 
 // Get a single task by ID
 router.get("/:id", getTaskById);

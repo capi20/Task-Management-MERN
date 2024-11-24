@@ -17,7 +17,6 @@ import Input from "../components/Input";
 import { priorityList, statusList } from "../constants";
 import { useAppContext } from "../context/appContext";
 import { serverInstance } from "../axiosInstances";
-import AddIcon from "@mui/icons-material/Add";
 import Loader from "../components/Loader";
 
 const Home = () => {
@@ -131,13 +130,6 @@ const Home = () => {
 
 	return (
 		<>
-			<PageHeading title="Dashboard">
-				<Link className="btn" to="/newTask">
-					<AddIcon />
-					New Task
-				</Link>
-			</PageHeading>
-
 			{((!isSearch && tasks.length > 0) || isSearch) && (
 				<Grid container spacing={2}>
 					<Grid size={{ xs: 12, md: 5 }}>

@@ -208,3 +208,38 @@ export const searchTasks = async (req, res) => {
 		tasks
 	});
 };
+
+// Get stats
+export const getTaskStats = async (req, res) => {
+	const { assignee } = req.query;
+
+	try {
+		const matchCondition = assignee ? { assignee: assignee } : {};
+
+		const priorityStats = await Task.aggregate([
+			{ $match: matchCondition },
+			{ $group: { _id: "$priority", count: { $sum: 1 } } }
+		]);
+
+		const statusStats = await Task.aggregate([
+			{ $match: matchCondition },
+			{ $group: { _id: "$status", count: { $sum: 1 } } }
+		]);
+
+		const priority = priorityStats.reduce((acc, item) => {
+			acc[item._id] = item.count;
+			return acc;
+		}, {});
+
+		const status = statusStats.reduce((acc, item) => {
+			acc[item._id] = item.count;
+			return acc;
+		}, {});
+
+		res.status(StatusCodes.OK).json({ priority, status });
+	} catch (error) {
+		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+			message: "Failed to fetch task stats"
+		});
+	}
+};

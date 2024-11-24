@@ -26,28 +26,28 @@ const TaskCard = ({
 	handleMenuClick
 }) => {
 	return (
-		<Card>
+		<Card sx={{ height: "100%" }}>
 			<CardHeader
 				sx={{ pb: 0 }}
 				title={
-					<Stack
-						direction="row"
-						justifyContent="space-between"
-						alignItems="center">
-						<Typography
-							variant="h6"
-							style={{ flex: 1 }}
-							className="clip-text">
-							{title}
-						</Typography>
-						<IconButton onClick={(e) => handleMenuClick(e, _id)}>
-							<MoreVertOutlinedIcon />
-						</IconButton>
-					</Stack>
+					<Typography
+						variant="h6"
+						style={{ flex: 1 }}
+						component="p"
+						className="clip-text">
+						{title}
+					</Typography>
+				}
+				action={
+					<IconButton
+						aria-label="task menu"
+						onClick={(e) => handleMenuClick(e, _id)}>
+						<MoreVertOutlinedIcon />
+					</IconButton>
 				}
 			/>
 			<CardContent>
-				<Stack gap={2.5}>
+				<Stack gap={2.5} justifyContent="space-between">
 					<Typography
 						variant="body1"
 						component="p"

@@ -9,6 +9,7 @@
 *::after {
 	margin: 0;
 	padding: 0;
+	box-sizing: border-box;
 }
 
 body {
@@ -45,10 +46,7 @@ textarea {
 	resize: none;
 }
 
-input {
-	height: 30px;
-}
-
+input,
 select {
 	height: 40px;
 }
@@ -153,4 +151,9 @@ a.btn:hover {
 	cursor: pointer;
 	text-decoration: underline;
 	height: auto;
+}
+
+input[type="date"] {
+	width: 100%;
+	max-width: 100%;
 }

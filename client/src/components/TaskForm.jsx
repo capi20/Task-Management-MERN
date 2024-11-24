@@ -107,7 +107,10 @@ const TaskForm = ({
 			<SectionWrapper>
 				<Grid container rowSpacing={3} spacing={3}>
 					<Grid size={{ xs: 12, md: 8 }}>
-						<Stack direction="row" gap={3} mb={3}>
+						<Stack
+							direction={{ xs: "column", sm: "row" }}
+							gap={3}
+							mb={3}>
 							<Box flex={1}>
 								<Input
 									label="Title"
