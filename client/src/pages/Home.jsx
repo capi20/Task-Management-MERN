@@ -11,7 +11,6 @@ import {
 	Stack,
 	Typography
 } from "@mui/material";
-import PageHeading from "../components/PageHeading";
 import { Link, useNavigate } from "react-router-dom";
 import Input from "../components/Input";
 import { priorityList, statusList } from "../constants";
@@ -52,26 +51,30 @@ const Home = () => {
 	};
 
 	useEffect(() => {
-		async function getTasks(searchFlag) {
+		async function getTasks() {
 			try {
 				setLoading(true);
 				let searchTitle =
-					debounceQuery !== "" ? `title=${debounceQuery}&` : "";
+					debounceQuery !== "" ? `&title=${debounceQuery}` : "";
 				let searchPriority =
-					priority !== "" ? `priority=${priority}&` : "";
-				let searchStatus = status !== "" ? `status=${status}&` : "";
-				let searchDueDate = dueDate !== "" ? `dueDate=${dueDate}&` : "";
-				let searchAssignee = checked ? `assignee=${user.email}&` : "";
+					priority !== "" ? `&priority=${priority}` : "";
+				let searchStatus = status !== "" ? `&status=${status}` : "";
+				let searchDueDate = dueDate !== "" ? `&dueDate=${dueDate}` : "";
+				let searchAssignee = checked ? `&assignedMe=true` : "";
 				let res = await serverInstance(
-					searchFlag
-						? `tasks/search?page=${page}&limit=10&${searchTitle}${searchPriority}${searchStatus}${searchDueDate}${searchAssignee}`
-						: `tasks?page=${page}&limit=10`
+					`tasks?page=${page}&limit=10&${searchTitle}${searchPriority}${searchStatus}${searchDueDate}${searchAssignee}`
 				);
 
 				setTasks(res.data?.tasks || []);
 				setTotalPages(res.data?.totalPages || 0);
 				setLoading(false);
-				if (searchFlag) {
+				if (
+					debounceQuery !== "" ||
+					priority !== "" ||
+					status !== "" ||
+					dueDate !== "" ||
+					checked
+				) {
 					setIsSearch(true);
 				}
 			} catch (error) {
@@ -79,17 +82,7 @@ const Home = () => {
 				alertHandler(true, error.response.data.message, "error");
 			}
 		}
-		if (
-			debounceQuery !== "" ||
-			priority !== "" ||
-			status !== "" ||
-			dueDate !== "" ||
-			checked
-		) {
-			getTasks(true);
-		} else {
-			getTasks();
-		}
+		getTasks();
 	}, [reload, debounceQuery, priority, status, dueDate, page, checked]);
 
 	const debounce = useMemo(() => {

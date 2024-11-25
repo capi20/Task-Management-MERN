@@ -6,6 +6,13 @@ class CustomAPIError extends Error {
 	}
 }
 
+class ForbiddenError extends CustomAPIError {
+	constructor(message) {
+		super(message);
+		this.statusCode = StatusCodes.FORBIDDEN;
+	}
+}
+
 class BadRequestError extends CustomAPIError {
 	constructor(message) {
 		super(message);
@@ -27,4 +34,4 @@ class UnauthenticatedError extends CustomAPIError {
 	}
 }
 
-export { BadRequestError, NotFoundError, UnauthenticatedError };
+export { BadRequestError, NotFoundError, UnauthenticatedError, ForbiddenError };

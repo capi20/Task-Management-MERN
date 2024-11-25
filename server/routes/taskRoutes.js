@@ -5,7 +5,6 @@ import {
 	getTaskById,
 	updateTask,
 	deleteTask,
-	searchTasks,
 	getTaskStats
 } from "../controllers/taskController.js";
 import {
@@ -22,9 +21,6 @@ router.post("/", createTask);
 
 // Get all tasks
 router.get("/", getTasks);
-
-// Search tasks by title, priority, status and due date
-router.get("/search", searchTasks);
 
 // Send task reminders
 router.get("/reminders", sendReminders);

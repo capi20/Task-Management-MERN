@@ -49,7 +49,7 @@ export const editComment = async (req, res) => {
 			.json({ message: "Comment not found" });
 	}
 
-	checkPermissions(req.user.userId, comment.authorId);
+	checkPermissions(req.user.userId, comment.authorId, "edit this comment");
 
 	// Update the text of the comment
 	comment.text = text;
@@ -71,7 +71,7 @@ export const deleteComment = async (req, res) => {
 			.json({ message: "Comment not found" });
 	}
 
-	checkPermissions(req.user.userId, comment.authorId);
+	checkPermissions(req.user.userId, comment.authorId, "delete this comment");
 
 	// Find the task and remove the comment's ObjectId from the task's comments array
 

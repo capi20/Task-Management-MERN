@@ -23,7 +23,7 @@ const TaskStats = () => {
 				setOpenLoader(true);
 				let res = await serverInstance(
 					checked
-						? `/tasks/getStats?assignee=${user.email}`
+						? `/tasks/getStats?assignedMe=true`
 						: "/tasks/getStats"
 				);
 

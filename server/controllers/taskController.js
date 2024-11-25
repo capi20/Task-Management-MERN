@@ -4,10 +4,14 @@ import Task from "../models/Task.js";
 import { StatusCodes } from "http-status-codes";
 import checkPermissions from "../utils/checkPermissions.js";
 import User from "../models/User.js";
-import { BadRequestError, NotFoundError } from "../errors/index.js";
+import {
+	BadRequestError,
+	ForbiddenError,
+	NotFoundError
+} from "../errors/index.js";
 
 // check due date is not a past date
-const checkDueDate = (dueDate) => {
+export const checkDueDate = (dueDate) => {
 	const selectedDate = new Date(dueDate);
 	const today = new Date();
 
@@ -20,12 +24,23 @@ const checkDueDate = (dueDate) => {
 	}
 };
 
-const checkAssignee = async (assignee) => {
+export const checkAssignee = async (assignee) => {
 	let assigneeData = await User.findOne({ email: assignee.toLowerCase() });
 	if (!assigneeData) {
 		throw new NotFoundError("Please provide a valid assignee email id");
 	} else {
 		return assigneeData;
+	}
+};
+
+export const checkTaskPermission = (userEmail, task, action) => {
+	if (
+		task.creator.toString() !== userEmail &&
+		task.assignee.toString() !== userEmail
+	) {
+		throw new ForbiddenError(
+			`You are not authorized to ${action} this task`
+		);
 	}
 };
 
@@ -39,24 +54,29 @@ export const createTask = async (req, res) => {
 
 	const creator = req.user.userEmail;
 	const creatorName = req.user.userName;
-	const creatorId = req.user.userId;
 	const task = new Task({
 		...req.body,
 		creator,
 		creatorName,
-		creatorId,
 		assignee: assigneeData.email,
 		assigneeName: assigneeData.name
 	});
 	await task.save();
-	task.creatorId = null;
 	res.status(StatusCodes.CREATED).json(task);
 };
 
 // Get all tasks
 export const getTasks = async (req, res) => {
 	// Extract query parameters
-	const { page = 1, limit = 10 } = req.query;
+	const {
+		page = 1,
+		limit = 10,
+		title,
+		priority,
+		status,
+		dueDate,
+		assignedMe
+	} = req.query;
 
 	// Convert page and limit to integers
 	const pageNumber = parseInt(page, 10);
@@ -65,14 +85,38 @@ export const getTasks = async (req, res) => {
 	// Calculate the number of documents to skip
 	const skip = (pageNumber - 1) * limitNumber;
 
+	const userEmail = req.user.userEmail;
+	const filter = assignedMe
+		? { assignee: userEmail }
+		: {
+				$or: [{ creator: userEmail }, { assignee: userEmail }]
+		  };
+
+	// Apply additional query filters
+	if (title) {
+		filter.title = { $regex: title, $options: "i" }; // Case-insensitive search
+	}
+
+	if (priority) {
+		filter.priority = priority; // Exact match
+	}
+
+	if (status) {
+		filter.status = status; // Exact match
+	}
+
+	if (dueDate) {
+		filter.dueDate = dueDate; // Exact match
+	}
+
 	// Fetch tasks with pagination
-	const tasks = await Task.find()
+	const tasks = await Task.find(filter)
 		.sort({ dueDate: 1 })
 		.skip(skip)
 		.limit(limitNumber);
 
 	// Get the total count of tasks
-	const totalTasks = await Task.countDocuments();
+	const totalTasks = await Task.countDocuments(filter);
 
 	// Calculate total pages
 	const totalPages = Math.ceil(totalTasks / limitNumber);
@@ -97,6 +141,10 @@ export const getTaskById = async (req, res) => {
 			.status(StatusCodes.NOT_FOUND)
 			.json({ message: "Task not found" });
 	}
+
+	// Ensure the user is either the creator or the assignee of the task
+	const userEmail = req.user.userEmail;
+	checkTaskPermission(userEmail, task, "access");
 	res.status(StatusCodes.OK).json(task);
 };
 
@@ -114,27 +162,33 @@ export const updateTask = async (req, res) => {
 		req.body.assignee = assigneeData.email;
 	}
 
-	const task = await Task.findByIdAndUpdate(req.params.id, req.body, {
-		new: true
-	});
+	const task = await Task.findById(req.params.id);
+
 	if (!task) {
 		return res.status(404).json({ message: "Task not found" });
 	}
-	res.status(StatusCodes.OK).json(task);
+
+	const userEmail = req.user.userEmail;
+	checkTaskPermission(userEmail, task, "update");
+
+	const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, {
+		new: true
+	});
+	res.status(StatusCodes.OK).json(updatedTask);
 };
 
 // Delete a task by ID
 export const deleteTask = async (req, res) => {
 	const taskId = req.params.id;
 
-	const task = await Task.findById(taskId).select("+creatorId");
+	const task = await Task.findById(taskId);
 	if (!task) {
 		return res
 			.status(StatusCodes.NOT_FOUND)
 			.json({ message: "Task not found" });
 	}
 
-	checkPermissions(req.user.userId, task.creatorId);
+	checkPermissions(req.user.userEmail, task.creator, "delete this task");
 
 	await Task.deleteOne({ _id: taskId });
 	await Comment.deleteMany({ taskId: taskId });
@@ -144,102 +198,38 @@ export const deleteTask = async (req, res) => {
 	});
 };
 
-// Search tasks by title
-export const searchTasks = async (req, res) => {
-	const {
-		title,
-		priority,
-		status,
-		dueDate,
-		assignee,
-		page = 1,
-		limit = 10
-	} = req.query;
-
-	if (!title && !priority && !status && !dueDate && !assignee) {
-		return res
-			.status(StatusCodes.BAD_REQUEST)
-			.json({ message: "At least one query parameter is required" });
-	}
-
-	const pageNumber = parseInt(page, 10);
-	const limitNumber = parseInt(limit, 10);
-
-	const skip = (pageNumber - 1) * limitNumber;
-
-	const filter = {};
-
-	if (title) {
-		filter.title = { $regex: title, $options: "i" }; // Case-insensitive search
-	}
-
-	if (priority) {
-		filter.priority = priority; // Exact match
-	}
-
-	if (status) {
-		filter.status = status; // Exact match
-	}
-
-	if (dueDate) {
-		filter.dueDate = dueDate; // Exact match
-	}
-
-	if (assignee) {
-		filter.assignee = assignee; // Exact match
-	}
-
-	const tasks = await Task.find(filter)
-		.sort({ dueDate: 1 })
-		.skip(skip)
-		.limit(limitNumber);
-
-	// Get the total count of tasks
-	const totalTasks = await Task.countDocuments(filter);
-
-	// Calculate total pages
-	const totalPages = Math.ceil(totalTasks / limitNumber);
-
-	// Return paginated results
-	res.status(StatusCodes.OK).json({
-		totalTasks,
-		totalPages,
-		currentPage: pageNumber,
-		tasks
-	});
-};
-
 // Get stats
 export const getTaskStats = async (req, res) => {
-	const { assignee } = req.query;
+	const { assignedMe } = req.query;
 
-	try {
-		const matchCondition = assignee ? { assignee: assignee } : {};
+	const userEmail = req.user.userEmail;
 
-		const priorityStats = await Task.aggregate([
-			{ $match: matchCondition },
-			{ $group: { _id: "$priority", count: { $sum: 1 } } }
-		]);
+	// Match tasks where the user is either the creator or the assignee
+	const matchCondition = assignedMe
+		? { assignee: userEmail }
+		: {
+				$or: [{ creator: userEmail }, { assignee: userEmail }]
+		  };
 
-		const statusStats = await Task.aggregate([
-			{ $match: matchCondition },
-			{ $group: { _id: "$status", count: { $sum: 1 } } }
-		]);
+	const priorityStats = await Task.aggregate([
+		{ $match: matchCondition },
+		{ $group: { _id: "$priority", count: { $sum: 1 } } }
+	]);
 
-		const priority = priorityStats.reduce((acc, item) => {
-			acc[item._id] = item.count;
-			return acc;
-		}, {});
+	const statusStats = await Task.aggregate([
+		{ $match: matchCondition },
+		{ $group: { _id: "$status", count: { $sum: 1 } } }
+	]);
 
-		const status = statusStats.reduce((acc, item) => {
-			acc[item._id] = item.count;
-			return acc;
-		}, {});
+	const priority = priorityStats.reduce((acc, item) => {
+		acc[item._id] = item.count;
+		return acc;
+	}, {});
 
-		res.status(StatusCodes.OK).json({ priority, status });
-	} catch (error) {
-		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-			message: "Failed to fetch task stats"
-		});
-	}
+	const status = statusStats.reduce((acc, item) => {
+		acc[item._id] = item.count;
+		return acc;
+	}, {});
+
+	res.status(StatusCodes.OK).json({ priority, status });
 };

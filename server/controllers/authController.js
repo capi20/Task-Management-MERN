@@ -3,17 +3,22 @@ import { StatusCodes } from "http-status-codes";
 import { BadRequestError, UnauthenticatedError } from "../errors/index.js";
 import attachCookies from "../utils/attachCookies.js";
 
-export const register = async (req, res, next) => {
-	let { name, email, password } = req.body;
-	email = email.toLowerCase();
+const checkRequired = (reqBody, requiredFields) => {
+	const missingFields = requiredFields.filter((field) => !reqBody[field]);
 
-	if (!email || !name || !password) {
+	if (missingFields.length > 0) {
 		throw new BadRequestError(
-			`Please provide ${!name && "Name"} ${!email && "Email"} ${
-				!password && "Password"
-			}.`
+			`The following fields are required: ${missingFields.join(", ")}.`
 		);
 	}
+};
+
+export const register = async (req, res, next) => {
+	let { name, email, password } = req.body;
+
+	checkRequired(req.body, ["name", "email", "password"]);
+
+	email = email.toLowerCase();
 
 	const user = await User.create({ name, email, password });
 	const token = user.createJWT();
@@ -26,13 +31,11 @@ export const register = async (req, res, next) => {
 
 export const login = async (req, res) => {
 	let { email, password } = req.body;
+
+	checkRequired(req.body, ["email", "password"]);
+
 	email = email.toLowerCase();
 
-	if (!email || !password) {
-		throw new BadRequestError(
-			`Please provide ${!email && "Email"} ${!password && "Password"}.`
-		);
-	}
 	const user = await User.findOne({ email }).select("+password");
 	if (!user) {
 		throw new UnauthenticatedError("Invalid Credentials");

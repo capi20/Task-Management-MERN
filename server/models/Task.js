@@ -33,17 +33,11 @@ const taskSchema = new mongoose.Schema(
 		},
 		creator: {
 			type: String,
-			required: [true, "Creator email is required"],
-			select: false
+			required: [true, "Creator email is required"]
 		},
 		creatorName: {
 			type: String,
 			required: [true, "Creator name is required"]
-		},
-		creatorId: {
-			type: String,
-			required: [true, "Creator Id is required"],
-			select: false
 		},
 		dueDate: {
 			type: String,

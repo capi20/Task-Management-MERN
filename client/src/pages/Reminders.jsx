@@ -3,17 +3,15 @@ import {
 	List,
 	ListItem,
 	Typography,
-	Alert,
-	Snackbar,
 	IconButton,
 	Badge,
 	Modal,
 	Box,
 	Stack
 } from "@mui/material";
-import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
 import { Link } from "react-router-dom";
 import { REMINDER_NO_TASK, REMINDER_TASK } from "../constants";
+import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 
 const style = {
 	position: "absolute",
@@ -61,7 +59,7 @@ const TaskReminders = () => {
 		<>
 			<IconButton color="inherit" onClick={handleOpen}>
 				<Badge badgeContent={reminders.length} color="primary">
-					<NotificationsNoneOutlinedIcon />
+					<NotificationsOutlinedIcon />
 				</Badge>
 			</IconButton>
 			<Modal open={open} onClose={handleClose}>
