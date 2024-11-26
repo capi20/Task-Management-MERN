@@ -3,20 +3,8 @@ import { StatusCodes } from "http-status-codes";
 import { BadRequestError, UnauthenticatedError } from "../errors/index.js";
 import attachCookies from "../utils/attachCookies.js";
 
-const checkRequired = (reqBody, requiredFields) => {
-	const missingFields = requiredFields.filter((field) => !reqBody[field]);
-
-	if (missingFields.length > 0) {
-		throw new BadRequestError(
-			`The following fields are required: ${missingFields.join(", ")}.`
-		);
-	}
-};
-
 export const register = async (req, res, next) => {
 	let { name, email, password } = req.body;
-
-	checkRequired(req.body, ["name", "email", "password"]);
 
 	email = email.toLowerCase();
 
@@ -31,8 +19,6 @@ export const register = async (req, res, next) => {
 
 export const login = async (req, res) => {
 	let { email, password } = req.body;
-
-	checkRequired(req.body, ["email", "password"]);
 
 	email = email.toLowerCase();
 
@@ -50,6 +36,50 @@ export const login = async (req, res) => {
 	user.password = undefined;
 	attachCookies(res, token);
 	res.status(StatusCodes.OK).json({
+		email: user.email,
+		name: user.name
+	});
+};
+
+export const updateUser = async (req, res, next) => {
+	const { name, password, email } = req.body;
+	const userId = req.user.userId;
+
+	// Email is not editable
+	if (email) {
+		return res.status(StatusCodes.BAD_REQUEST).json({
+			message: "You can not update email address"
+		});
+	}
+
+	// Ensure at least one field is provided for update
+	if (!name && !password) {
+		return res.status(StatusCodes.BAD_REQUEST).json({
+			message: "At least one of 'name' or 'password' must be provided"
+		});
+	}
+
+	// Find the user by ID
+	const user = await User.findById(userId);
+	if (!user) {
+		return res
+			.status(StatusCodes.NOT_FOUND)
+			.json({ message: "User not found" });
+	}
+
+	// Update fields if provided
+	if (name) {
+		user.name = name;
+	}
+	if (password) {
+		user.password = password;
+	}
+
+	// Save updated user
+	await user.save();
+
+	res.status(StatusCodes.OK).json({
+		message: "User updated successfully",
 		email: user.email,
 		name: user.name
 	});

@@ -24,7 +24,9 @@ export const checkDueDate = (dueDate) => {
 };
 
 export const checkAssignee = async (assignee) => {
-	let assigneeData = await User.findOne({ email: assignee.toLowerCase() });
+	let assigneeData = await User.findOne({
+		email: assignee.trim().toLowerCase()
+	});
 	if (!assigneeData) {
 		throw new NotFoundError("Please provide a valid assignee email id");
 	} else {

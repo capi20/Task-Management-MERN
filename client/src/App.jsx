@@ -7,8 +7,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 import CustomAlert from "./components/CustomAlert";
 import TaskReminders from "./pages/Reminders";
-import TaskStats from "./pages/TaskStats";
 import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
 
 function App() {
 	return (
@@ -25,7 +25,7 @@ function App() {
 					<Route path="/newTask" element={<NewTask />} />
 					<Route path="/task/:id" element={<TaskDetails />} />
 					<Route path="/reminders" element={<TaskReminders />} />
-					<Route path="/stats" element={<TaskStats />} />
+					<Route path="/profile" element={<Profile />} />
 				</Route>
 				<Route path="/login" element={<Login />} />
 				<Route path="*" element={<Navigate to="/" />} />

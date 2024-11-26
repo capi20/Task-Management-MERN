@@ -25,23 +25,28 @@ const taskSchema = new mongoose.Schema(
 		},
 		assignee: {
 			type: String,
-			required: [true, "Assignee email is required"]
+			required: [true, "Assignee email is required"],
+			trim: true
 		},
 		assigneeName: {
 			type: String,
-			required: [true, "Assignee name is required"]
+			required: [true, "Assignee name is required"],
+			trim: true
 		},
 		creator: {
 			type: String,
-			required: [true, "Creator email is required"]
+			required: [true, "Creator email is required"],
+			trim: true
 		},
 		creatorName: {
 			type: String,
-			required: [true, "Creator name is required"]
+			required: [true, "Creator name is required"],
+			trim: true
 		},
 		dueDate: {
 			type: String,
-			required: [true, "Due date is required"]
+			required: [true, "Due date is required"],
+			trim: true
 		},
 		labels: {
 			type: [String], // Array of strings for labels/tags

@@ -64,16 +64,10 @@ const TaskForm = ({
 			const res = isNew
 				? await serverInstance.post("tasks", {
 						...data,
-						title: data.title.trim(),
-						description: data.description.trim(),
-						assignee: data.assignee.trim(),
 						labels
 				  })
 				: await serverInstance.put(`tasks/${task._id}`, {
 						...data,
-						title: data.title.trim(),
-						description: data.description.trim(),
-						assignee: data.assignee.trim(),
 						labels
 				  });
 			if (isNew) {

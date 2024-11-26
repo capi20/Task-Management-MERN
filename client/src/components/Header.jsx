@@ -1,5 +1,5 @@
 import { Avatar, Box, IconButton, Stack, Typography } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import TaskReminders from "../pages/Reminders";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
@@ -7,6 +7,8 @@ import { useAppContext } from "../context/appContext";
 
 const Header = () => {
 	const { logoutUser, user } = useAppContext();
+	const navigate = useNavigate();
+
 	return (
 		<Box
 			width="100%"
@@ -29,13 +31,15 @@ const Header = () => {
 					<Link to="/">ZenTask</Link>
 				</Typography>
 				<Stack direction="row" gap={2}>
+					<TaskReminders />
+
 					{user?.name && (
-						<IconButton color="inherit">
+						<IconButton
+							color="inherit"
+							onClick={() => navigate("/profile")}>
 							<AccountCircleOutlinedIcon />
 						</IconButton>
 					)}
-
-					<TaskReminders />
 
 					<IconButton color="inherit" onClick={logoutUser}>
 						<LogoutIcon />
