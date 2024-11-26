@@ -2,7 +2,7 @@
 import { StatusCodes } from "http-status-codes";
 import Comment from "../models/Comment.js";
 import Task from "../models/Task.js";
-import checkPermissions from "../utils/checkPermissions.js";
+import { checkCreatorPermission } from "../utils/checkPermissions.js";
 
 // Add a comment to a task
 export const addCommentToTask = async (req, res) => {
@@ -49,7 +49,11 @@ export const editComment = async (req, res) => {
 			.json({ message: "Comment not found" });
 	}
 
-	checkPermissions(req.user.userId, comment.authorId, "edit this comment");
+	checkCreatorPermission(
+		req.user.userId,
+		comment.authorId,
+		"edit this comment"
+	);
 
 	// Update the text of the comment
 	comment.text = text;
@@ -71,7 +75,11 @@ export const deleteComment = async (req, res) => {
 			.json({ message: "Comment not found" });
 	}
 
-	checkPermissions(req.user.userId, comment.authorId, "delete this comment");
+	checkCreatorPermission(
+		req.user.userId,
+		comment.authorId,
+		"delete this comment"
+	);
 
 	// Find the task and remove the comment's ObjectId from the task's comments array
 
@@ -95,4 +103,22 @@ export const deleteComment = async (req, res) => {
 	res.status(StatusCodes.NO_CONTENT).json({
 		message: "Comment deleted successfully"
 	});
+};
+
+export const getTaskCommentsById = async (req, res) => {
+	const taskId = req.params.id;
+
+	// Find the task to verify permissions
+	const task = await Task.findById(taskId);
+	if (!task) {
+		return res
+			.status(StatusCodes.NOT_FOUND)
+			.json({ message: "Task not found" });
+	}
+
+	// Fetch comments directly from the Comment model using taskId
+	const comments = await Comment.find({ taskId }).sort({ createdAt: -1 });
+	console.log(comments);
+	// Return the fetched comments
+	res.status(StatusCodes.OK).json(comments);
 };

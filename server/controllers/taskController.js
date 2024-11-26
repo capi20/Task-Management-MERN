@@ -2,13 +2,12 @@
 import Comment from "../models/Comment.js";
 import Task from "../models/Task.js";
 import { StatusCodes } from "http-status-codes";
-import checkPermissions from "../utils/checkPermissions.js";
-import User from "../models/User.js";
 import {
-	BadRequestError,
-	ForbiddenError,
-	NotFoundError
-} from "../errors/index.js";
+	checkCreatorOrAssigneePermission,
+	checkCreatorPermission
+} from "../utils/checkPermissions.js";
+import User from "../models/User.js";
+import { BadRequestError, NotFoundError } from "../errors/index.js";
 
 // check due date is not a past date
 export const checkDueDate = (dueDate) => {
@@ -30,17 +29,6 @@ export const checkAssignee = async (assignee) => {
 		throw new NotFoundError("Please provide a valid assignee email id");
 	} else {
 		return assigneeData;
-	}
-};
-
-export const checkTaskPermission = (userEmail, task, action) => {
-	if (
-		task.creator.toString() !== userEmail &&
-		task.assignee.toString() !== userEmail
-	) {
-		throw new ForbiddenError(
-			`You are not authorized to ${action} this task`
-		);
 	}
 };
 
@@ -144,7 +132,7 @@ export const getTaskById = async (req, res) => {
 
 	// Ensure the user is either the creator or the assignee of the task
 	const userEmail = req.user.userEmail;
-	checkTaskPermission(userEmail, task, "access");
+	checkCreatorOrAssigneePermission(userEmail, task, "access");
 	res.status(StatusCodes.OK).json(task);
 };
 
@@ -169,7 +157,7 @@ export const updateTask = async (req, res) => {
 	}
 
 	const userEmail = req.user.userEmail;
-	checkTaskPermission(userEmail, task, "update");
+	checkCreatorOrAssigneePermission(userEmail, task, "update");
 
 	const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, {
 		new: true
@@ -188,7 +176,11 @@ export const deleteTask = async (req, res) => {
 			.json({ message: "Task not found" });
 	}
 
-	checkPermissions(req.user.userEmail, task.creator, "delete this task");
+	checkCreatorPermission(
+		req.user.userEmail,
+		task.creator,
+		"delete this task"
+	);
 
 	await Task.deleteOne({ _id: taskId });
 	await Comment.deleteMany({ taskId: taskId });

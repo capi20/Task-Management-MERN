@@ -1,6 +1,5 @@
-import { Button, Menu, MenuItem, Stack, Typography } from "@mui/material";
+import { Button, Stack, Typography } from "@mui/material";
 import CommentCard from "./CommentCard";
-import Input from "./Input";
 import { useEffect, useRef, useState } from "react";
 import { serverInstance } from "../axiosInstances";
 import { useAppContext } from "../context/appContext";
@@ -8,51 +7,72 @@ import { useAppContext } from "../context/appContext";
 const CommentSection = ({ taskId, commentList }) => {
 	const [commentInput, setCommentInput] = useState("");
 	const [comments, setComments] = useState(commentList || []);
-	const { setOpenLoader, alertHandler } = useAppContext();
 	const [commentClicked, setCommentClicked] = useState("");
+	const [isEditing, setIsEditing] = useState(false);
+	const { setOpenLoader, alertHandler } = useAppContext();
 	const commentRef = useRef(null);
-
-	const [anchorEl, setAnchorEl] = useState(null);
-	const openMenu = Boolean(anchorEl);
 
 	useEffect(() => {
 		setComments(commentList);
 	}, [commentList]);
 
-	const handleMenuClick = (event, id) => {
-		setAnchorEl(event.currentTarget);
-		setCommentClicked(id);
-	};
-	const handleMenuClose = () => {
-		setAnchorEl(null);
+	const handleFocusAndScroll = () => {
+		if (commentRef.current) {
+			// Focus the textarea
+			commentRef.current.focus();
+
+			commentRef.current.scrollIntoView({
+				behavior: "smooth",
+				block: "center" // Align it centrally
+			});
+		}
 	};
 
-	const commentHandler = async (actionType) => {
+	const editHandler = (commentId, commentText) => {
+		handleFocusAndScroll();
+		setIsEditing(true);
+		setCommentClicked(commentId);
+		setCommentInput(commentText);
+	};
+
+	const deleteHandler = (commentId) => {
+		commentHandler("delete", commentId);
+	};
+
+	const getComments = async () => {
+		try {
+			const res = await serverInstance.get(`tasks/${taskId}/comments`);
+			setComments(res.data);
+		} catch (error) {
+			alertHandler(true, error.response.data.message, "error");
+		}
+	};
+
+	const commentHandler = async (actionType, commentId) => {
 		try {
 			setOpenLoader(true);
 			const data = {
 				text: commentInput,
 				taskId: actionType === "add" ? taskId : "",
-				commentId: actionType === "edit" ? commentClicked : ""
+				commentId: actionType === "edit" ? commentId : ""
 			};
 
 			if (actionType === "add") {
 				const res = await serverInstance.post(`tasks/comments`, data);
-				alertHandler(true, "Added comment successfully!", "success");
+				alertHandler(true, "Comment added successfully!", "success");
 				setCommentInput("");
-				setComments([res.data, ...comments]);
 			} else if (actionType === "edit") {
 				const res = await serverInstance.put(`tasks/comments`, data);
-				alertHandler(true, "Edit comment successfully!", "success");
+				alertHandler(true, "Comment updated successfully!", "success");
+				setCommentInput("");
+				setIsEditing(false);
 			} else if (actionType === "delete") {
 				await serverInstance.delete(
-					`tasks/${taskId}/comments/${commentClicked}`
-				);
-				setComments((prev) =>
-					prev.filter((p) => p._id !== commentClicked)
+					`tasks/${taskId}/comments/${commentId}`
 				);
 				alertHandler(true, "Comment deleted successfully", "success");
 			}
+			await getComments();
 		} catch (error) {
 			alertHandler(true, error.response.data.message, "error");
 		} finally {
@@ -66,7 +86,7 @@ const CommentSection = ({ taskId, commentList }) => {
 				Comments
 			</Typography>
 			<Stack maxWidth={600} gap={3}>
-				<Input
+				<textarea
 					ref={commentRef}
 					type="textarea"
 					placeholder="Write a comment"
@@ -74,54 +94,48 @@ const CommentSection = ({ taskId, commentList }) => {
 					value={commentInput}
 					onChange={(e) => setCommentInput(e.target.value)}
 				/>
-				<Button
-					disabled={!commentInput || commentInput === ""}
-					variant="contained"
-					onClick={() => commentHandler("add")}>
-					Add Comment
-				</Button>
+				{isEditing ? (
+					<Stack direction="row" gap={3}>
+						<Button
+							disabled={!commentInput || commentInput === ""}
+							variant="contained"
+							onClick={() =>
+								commentHandler("edit", commentClicked)
+							}>
+							Update
+						</Button>
+						<Button
+							variant="outlined"
+							onClick={() => {
+								setIsEditing(false);
+								setCommentInput("");
+							}}>
+							Cancel
+						</Button>
+					</Stack>
+				) : (
+					<Button
+						disabled={!commentInput || commentInput === ""}
+						variant="contained"
+						onClick={() => commentHandler("add")}>
+						Add Comment
+					</Button>
+				)}
 				{comments.length > 0 && (
 					<Stack gap={3}>
 						{comments.map((comment) => (
 							<CommentCard
 								key={comment._id}
 								{...comment}
-								handleMenuClick={handleMenuClick}
+								// handleMenuClick={handleMenuClick}
+								commentHandler={commentHandler}
+								editHandler={editHandler}
+								deleteHandler={deleteHandler}
 							/>
 						))}
 					</Stack>
 				)}
 			</Stack>
-			{comments.length > 0 && (
-				<Menu
-					anchorEl={anchorEl}
-					open={openMenu}
-					onClose={handleMenuClose}
-					transformOrigin={{
-						vertical: "top",
-						horizontal: "center"
-					}}
-					anchorOrigin={{
-						vertical: "bottom",
-						horizontal: "left"
-					}}>
-					{/* <MenuItem
-						onClick={() => {
-							commentRef.current.focus();
-							// commentHandler("edit");
-							handleMenuClose();
-						}}>
-						Edit
-					</MenuItem> */}
-					<MenuItem
-						onClick={() => {
-							commentHandler("delete");
-							handleMenuClose();
-						}}>
-						Delete
-					</MenuItem>
-				</Menu>
-			)}
 		</>
 	);
 };

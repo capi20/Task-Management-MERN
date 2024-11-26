@@ -10,7 +10,8 @@ import {
 import {
 	addCommentToTask,
 	deleteComment,
-	editComment
+	editComment,
+	getTaskCommentsById
 } from "../controllers/commentController.js";
 import { sendReminders } from "../scheduler/index.js";
 
@@ -42,6 +43,9 @@ router.put("/:id", updateTask);
 
 // Delete a task by ID
 router.delete("/:id", deleteTask);
+
+// Get comments by Task ID
+router.get("/:id/comments", getTaskCommentsById);
 
 // Delete a comment by ID
 router.delete("/:id/comments/:commentId", deleteComment);

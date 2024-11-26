@@ -1,11 +1,12 @@
-import { Box, IconButton, Stack, Typography } from "@mui/material";
+import { Avatar, Box, IconButton, Stack, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import TaskReminders from "../pages/Reminders";
 import LogoutIcon from "@mui/icons-material/Logout";
+import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import { useAppContext } from "../context/appContext";
 
 const Header = () => {
-	const { logoutUser } = useAppContext();
+	const { logoutUser, user } = useAppContext();
 	return (
 		<Box
 			width="100%"
@@ -28,7 +29,14 @@ const Header = () => {
 					<Link to="/">ZenTask</Link>
 				</Typography>
 				<Stack direction="row" gap={2}>
+					{user?.name && (
+						<IconButton color="inherit">
+							<AccountCircleOutlinedIcon />
+						</IconButton>
+					)}
+
 					<TaskReminders />
+
 					<IconButton color="inherit" onClick={logoutUser}>
 						<LogoutIcon />
 					</IconButton>
