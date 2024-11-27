@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const commentSchema = new mongoose.Schema(
 	{
 		taskId: {
-			type: mongoose.Schema.Types.ObjectId,
+			type: String,
 			ref: "Task", // This links the comment to a task
 			required: [true, "Task id is required"]
 		},

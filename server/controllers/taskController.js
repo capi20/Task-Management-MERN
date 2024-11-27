@@ -42,16 +42,15 @@ export const createTask = async (req, res) => {
 
 	const assigneeData = await checkAssignee(assignee);
 
-	const creator = req.user.userEmail;
-	const creatorName = req.user.userName;
 	const task = new Task({
 		...req.body,
-		creator,
-		creatorName,
-		assignee: assigneeData.email,
-		assigneeName: assigneeData.name
+		assignee: assigneeData._id.toString(),
+		creator: req.user.userId
 	});
 	await task.save();
+
+	task.assignee = undefined;
+	task.creator = undefined;
 	res.status(StatusCodes.CREATED).json(task);
 };
 
@@ -75,11 +74,11 @@ export const getTasks = async (req, res) => {
 	// Calculate the number of documents to skip
 	const skip = (pageNumber - 1) * limitNumber;
 
-	const userEmail = req.user.userEmail;
+	const userId = req.user.userId;
 	const filter = assignedMe
-		? { assignee: userEmail }
+		? { assignee: userId }
 		: {
-				$or: [{ creator: userEmail }, { assignee: userEmail }]
+				$or: [{ creator: userId }, { assignee: userId }]
 		  };
 
 	// Apply additional query filters
@@ -103,7 +102,9 @@ export const getTasks = async (req, res) => {
 	const tasks = await Task.find(filter)
 		.sort({ dueDate: 1 })
 		.skip(skip)
-		.limit(limitNumber);
+		.limit(limitNumber)
+		.populate("creator", "name email -_id") // Include `name` and `email` from User model
+		.populate("assignee", "name email -_id"); // Include `name` and `email` from User model;
 
 	// Get the total count of tasks
 	const totalTasks = await Task.countDocuments(filter);
@@ -122,10 +123,13 @@ export const getTasks = async (req, res) => {
 
 // Get a single task by ID
 export const getTaskById = async (req, res) => {
-	const task = await Task.findById(req.params.id).populate({
-		path: "comments",
-		options: { sort: { createdAt: -1 } }
-	});
+	const task = await Task.findById(req.params.id)
+		.populate("assignee", "email")
+		.populate({
+			path: "comments",
+			options: { sort: { createdAt: -1 } }
+		});
+
 	if (!task) {
 		return res
 			.status(StatusCodes.NOT_FOUND)
@@ -133,9 +137,26 @@ export const getTaskById = async (req, res) => {
 	}
 
 	// Ensure the user is either the creator or the assignee of the task
-	const userEmail = req.user.userEmail;
-	checkCreatorOrAssigneePermission(userEmail, task, "access");
-	res.status(StatusCodes.OK).json(task);
+	checkCreatorOrAssigneePermission(
+		req.user.userId,
+		task.assignee._id,
+		task.creator,
+		"access"
+	);
+
+	const response = {
+		_id: task._id,
+		title: task.title,
+		description: task.description,
+		status: task.status,
+		priority: task.priority,
+		assignee: task.assignee.email,
+		dueDate: task.dueDate,
+		labels: task.labels,
+		comments: task.comments
+	};
+
+	res.status(StatusCodes.OK).json(response);
 };
 
 // Update a task by ID
@@ -148,8 +169,7 @@ export const updateTask = async (req, res) => {
 
 	if (assignee) {
 		const assigneeData = await checkAssignee(assignee);
-		req.body.assigneeName = assigneeData.name;
-		req.body.assignee = assigneeData.email;
+		req.body.assignee = assigneeData._id;
 	}
 
 	const task = await Task.findById(req.params.id);
@@ -158,12 +178,20 @@ export const updateTask = async (req, res) => {
 		return res.status(404).json({ message: "Task not found" });
 	}
 
-	const userEmail = req.user.userEmail;
-	checkCreatorOrAssigneePermission(userEmail, task, "update");
+	checkCreatorOrAssigneePermission(
+		req.user.userId,
+		task.assignee,
+		task.creator,
+		"access"
+	);
 
 	const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, {
 		new: true
 	});
+
+	updatedTask.assignee = undefined;
+	updatedTask.creator = undefined;
+
 	res.status(StatusCodes.OK).json(updatedTask);
 };
 
@@ -178,11 +206,7 @@ export const deleteTask = async (req, res) => {
 			.json({ message: "Task not found" });
 	}
 
-	checkCreatorPermission(
-		req.user.userEmail,
-		task.creator,
-		"delete this task"
-	);
+	checkCreatorPermission(req.user.userId, task.creator, "delete this task");
 
 	await Task.deleteOne({ _id: taskId });
 	await Comment.deleteMany({ taskId: taskId });
@@ -196,13 +220,14 @@ export const deleteTask = async (req, res) => {
 export const getTaskStats = async (req, res) => {
 	const { assignedMe } = req.query;
 
-	const userEmail = req.user.userEmail;
+	// const userId = new mongoose.Types.ObjectId(req.user.userId);
+	const userId = req.user.userId;
 
 	// Match tasks where the user is either the creator or the assignee
 	const matchCondition = assignedMe
-		? { assignee: userEmail }
+		? { assignee: userId }
 		: {
-				$or: [{ creator: userEmail }, { assignee: userEmail }]
+				$or: [{ creator: userId }, { assignee: userId }]
 		  };
 
 	const priorityStats = await Task.aggregate([

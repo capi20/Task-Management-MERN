@@ -10,11 +10,13 @@ export const checkCreatorPermission = (
 	throw new ForbiddenError(`You are not authorized to ${action}`);
 };
 
-export const checkCreatorOrAssigneePermission = (userEmail, task, action) => {
-	if (
-		task.creator.toString() !== userEmail &&
-		task.assignee.toString() !== userEmail
-	) {
+export const checkCreatorOrAssigneePermission = (
+	userId,
+	assigneeId,
+	creatorId,
+	action
+) => {
+	if (assigneeId.toString() !== userId && creatorId.toString() !== userId) {
 		throw new ForbiddenError(
 			`You are not authorized to ${action} this task`
 		);

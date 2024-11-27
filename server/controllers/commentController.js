@@ -2,7 +2,10 @@
 import { StatusCodes } from "http-status-codes";
 import Comment from "../models/Comment.js";
 import Task from "../models/Task.js";
-import { checkCreatorPermission } from "../utils/checkPermissions.js";
+import {
+	checkCreatorOrAssigneePermission,
+	checkCreatorPermission
+} from "../utils/checkPermissions.js";
 
 // Add a comment to a task
 export const addCommentToTask = async (req, res) => {
@@ -116,9 +119,16 @@ export const getTaskCommentsById = async (req, res) => {
 			.json({ message: "Task not found" });
 	}
 
+	checkCreatorOrAssigneePermission(
+		req.user.userId,
+		task.assignee,
+		task.creator,
+		"access"
+	);
+
 	// Fetch comments directly from the Comment model using taskId
 	const comments = await Comment.find({ taskId }).sort({ createdAt: -1 });
-	console.log(comments);
+
 	// Return the fetched comments
 	res.status(StatusCodes.OK).json(comments);
 };

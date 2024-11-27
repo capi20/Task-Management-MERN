@@ -24,24 +24,14 @@ const taskSchema = new mongoose.Schema(
 			required: [true, "Priority is required"]
 		},
 		assignee: {
-			type: String,
-			required: [true, "Assignee email is required"],
-			trim: true
-		},
-		assigneeName: {
-			type: String,
-			required: [true, "Assignee name is required"],
-			trim: true
+			type: String, // Reference to the User model
+			ref: "User",
+			required: [true, "Assignee is required"]
 		},
 		creator: {
-			type: String,
-			required: [true, "Creator email is required"],
-			trim: true
-		},
-		creatorName: {
-			type: String,
-			required: [true, "Creator name is required"],
-			trim: true
+			type: String, // Reference to the User model
+			ref: "User",
+			required: [true, "Creator is required"]
 		},
 		dueDate: {
 			type: String,

@@ -8,7 +8,6 @@ import { priorityList, statusList, taskFields } from "../constants";
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import CommentCard from "./CommentCard";
 import { useAppContext } from "../context/appContext";
 import { serverInstance } from "../axiosInstances";
 import TaskLabels from "./TaskLabels";
@@ -34,13 +33,11 @@ const TaskForm = ({
 		register,
 		handleSubmit,
 		setValue,
-		watch,
 		formState: { errors }
 	} = useForm({
 		defaultValues
 	});
 
-	const commentInput = watch(taskFields.comment);
 	const location = useLocation();
 	const navigate = useNavigate();
 	const isNew = location.pathname === "/newTask" ? true : false;
