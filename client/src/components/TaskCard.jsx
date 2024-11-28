@@ -96,10 +96,14 @@ const TaskCard = ({
 						justifyContent="space-between">
 						<Stack>
 							<Typography variant="body2" color="grey">
-								Created by: {creator.name}
+								Created by:{" "}
+								{creator.name.charAt(0).toUpperCase() +
+									creator.name.slice(1)}
 							</Typography>
 							<Typography variant="body2" color="grey">
-								Assigned to: {assignee.name}
+								Assigned to:{" "}
+								{assignee.name.charAt(0).toUpperCase() +
+									assignee.name.slice(1)}
 							</Typography>
 						</Stack>
 						<Stack alignItems="flex-end">

@@ -42,15 +42,18 @@ const TaskForm = ({
 	const navigate = useNavigate();
 	const isNew = location.pathname === "/newTask" ? true : false;
 
-	const [currentTask, setCurrentTask] = useState(task);
 	const [labels, setLabels] = useState(task?.labels || []); // List of tags
 	const [inputLabel, setInputLabel] = useState(""); // Input value for new tag
 	const { alertHandler, setOpenLoader } = useAppContext();
 
 	useEffect(() => {
 		if (!isNew) {
-			onreset(task);
-			setCurrentTask(task);
+			setValue(taskFields.title, task.title);
+			setValue(taskFields.description, task.description);
+			setValue(taskFields.status, task.status);
+			setValue(taskFields.priority, task.priority);
+			setValue(taskFields.assignee, task.assignee);
+			setValue(taskFields.dueDate, task.dueDate);
 			setLabels(task.labels || []);
 		}
 	}, [task]);
@@ -71,7 +74,6 @@ const TaskForm = ({
 				alertHandler(true, "Task created successfully!", "success");
 				navigate("/");
 			} else {
-				setCurrentTask(res.data);
 				alertHandler(true, "Task updated successfully!", "success");
 			}
 		} catch (error) {
@@ -81,20 +83,15 @@ const TaskForm = ({
 		}
 	};
 
-	const onreset = (taskData) => {
-		setValue(taskFields.title, taskData.title);
-		setValue(taskFields.description, taskData.description);
-		setValue(taskFields.status, taskData.status);
-		setValue(taskFields.priority, taskData.priority);
-		setValue(taskFields.assignee, taskData.assignee);
-		setValue(taskFields.dueDate, taskData.dueDate);
-		setLabels(taskData.labels);
-		setInputLabel("");
-	};
-
 	return (
 		<Stack margin="auto">
-			<PageHeading title={isNew ? "New Task" : "Edit task"} />
+			<PageHeading title={isNew ? "New Task" : "Edit task"}>
+				{!isNew && (
+					<Typography variant="body1" color="text.secondary">
+						Created by: {task.creator}
+					</Typography>
+				)}
+			</PageHeading>
 			<SectionWrapper>
 				<Grid container rowSpacing={3} spacing={3}>
 					<Grid size={{ xs: 12, md: 8 }}>
@@ -181,8 +178,8 @@ const TaskForm = ({
 						<Button
 							fullWidth
 							variant="outlined"
-							onClick={() => onreset(currentTask)}>
-							Reset
+							onClick={() => navigate("/")}>
+							Cancel
 						</Button>
 					</Grid>
 				</Grid>

@@ -125,6 +125,7 @@ export const getTasks = async (req, res) => {
 export const getTaskById = async (req, res) => {
 	const task = await Task.findById(req.params.id)
 		.populate("assignee", "email")
+		.populate("creator", "email")
 		.populate({
 			path: "comments",
 			options: { sort: { createdAt: -1 } }
@@ -140,23 +141,14 @@ export const getTaskById = async (req, res) => {
 	checkCreatorOrAssigneePermission(
 		req.user.userId,
 		task.assignee._id,
-		task.creator,
+		task.creator._id,
 		"access"
 	);
 
-	const response = {
-		_id: task._id,
-		title: task.title,
-		description: task.description,
-		status: task.status,
-		priority: task.priority,
-		assignee: task.assignee.email,
-		dueDate: task.dueDate,
-		labels: task.labels,
-		comments: task.comments
-	};
+	task.assignee = task.assignee.email;
+	task.creator = task.creator.email;
 
-	res.status(StatusCodes.OK).json(response);
+	res.status(StatusCodes.OK).json(task);
 };
 
 // Update a task by ID
