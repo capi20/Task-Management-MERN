@@ -1,5 +1,7 @@
-import { Stack, Typography } from "@mui/material";
-import { forwardRef } from "react";
+import { IconButton, Stack, Typography } from "@mui/material";
+import { forwardRef, useState } from "react";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 
 const Input = forwardRef(
 	(
@@ -15,8 +17,10 @@ const Input = forwardRef(
 		},
 		ref
 	) => {
+		const [isVisible, setIsVisible] = useState(false);
+
 		return (
-			<Stack>
+			<Stack position="relative">
 				{label && (
 					<Typography
 						variant="body1"
@@ -54,6 +58,35 @@ const Input = forwardRef(
 							</option>
 						))}
 					</select>
+				) : type === "password" ? (
+					<>
+						<input
+							type={isVisible ? "text" : "password"}
+							ref={ref}
+							name={name}
+							id={name}
+							placeholder={placeholder}
+							className={error ? "error" : ""}
+							{...props}
+							style={{
+								paddingRight: "40px"
+							}}
+						/>
+						<IconButton
+							onClick={() => setIsVisible(!isVisible)}
+							sx={{
+								position: "absolute",
+								right: 0,
+								top: "22px"
+							}}
+							color="text.secondary">
+							{isVisible ? (
+								<VisibilityOutlinedIcon />
+							) : (
+								<VisibilityOffOutlinedIcon />
+							)}
+						</IconButton>
+					</>
 				) : (
 					<input
 						type={type}
