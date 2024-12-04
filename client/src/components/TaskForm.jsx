@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import PageHeading from "./PageHeading";
@@ -33,6 +33,7 @@ const TaskForm = ({
 		register,
 		handleSubmit,
 		setValue,
+		getValues,
 		formState: { errors }
 	} = useForm({
 		defaultValues
@@ -44,6 +45,7 @@ const TaskForm = ({
 
 	const [labels, setLabels] = useState(task?.labels || []); // List of tags
 	const [inputLabel, setInputLabel] = useState(""); // Input value for new tag
+	const [generating, setGenerating] = useState(false);
 	const { alertHandler, setOpenLoader } = useAppContext();
 
 	useEffect(() => {
@@ -80,6 +82,24 @@ const TaskForm = ({
 			alertHandler(true, error?.response?.data.message, "error");
 		} finally {
 			setOpenLoader(false);
+		}
+	};
+
+	const generateTaskDescription = async () => {
+		let prompt = getValues(taskFields.description);
+		if (!prompt) {
+			return;
+		}
+		setGenerating(true);
+		try {
+			const res = await serverInstance.post("/generate-description", {
+				prompt: prompt
+			});
+			setValue(taskFields.description, res.data.description);
+		} catch (error) {
+			alertHandler(true, error.message, "error");
+		} finally {
+			setGenerating(false);
 		}
 	};
 
@@ -129,7 +149,13 @@ const TaskForm = ({
 								required: true
 							})}
 							error={errors[taskFields.description]}
+							disabled={generating}
 						/>
+						<Button
+							disabled={generating}
+							onClick={generateTaskDescription}>
+							{generating ? "Generating..." : "Generate from AI"}
+						</Button>
 					</Grid>
 					<Grid size={{ xs: 12, md: 4 }}>
 						<Box mb={3}>

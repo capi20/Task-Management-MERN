@@ -21,6 +21,7 @@ import taskRouter from "./routes/taskRoutes.js";
 import authRouter from "./routes/authRoutes.js";
 import authenticateUser from "./middleware/auth.js";
 import { startScheduler } from "./scheduler/index.js";
+import generateDescription from "./controllers/genAIController.js";
 
 dotenv.config();
 const app = express();
@@ -70,6 +71,7 @@ app.use(mongoSanitize());
 // Routes
 app.use("/api/auth", authRouter);
 app.use("/api/tasks", authenticateUser, taskRouter);
+app.post("/api/generate-description", authenticateUser, generateDescription);
 
 app.get("*", (req, res) => {
 	res.sendFile(path.resolve(__dirname, "../client/dist", "index.html"));
@@ -96,3 +98,5 @@ const start = async () => {
 };
 
 start();
+
+export default app;
