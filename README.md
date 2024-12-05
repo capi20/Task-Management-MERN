@@ -3,7 +3,7 @@
 ### Live demo https://task-management-mern-prod.onrender.com/
 
 ### 📚 Project Overview
-This is a full-featured **Task Management Application** built using the **MERN stack** (MongoDB, Express.js, React, Node.js). It enables users to create, manage, and filter tasks efficiently while ensuring secure access and personalized functionality. The project is designed with **JWT-based authentication**, a live **due-date alert system**, and user-friendly interfaces. Additionally, the application is **fully optimized for mobile devices**, providing a seamless experience across all screen sizes. Users can also **visualize task statistics** through dynamic charts, making it easier to track task distribution and progress.
+This is a full-featured **Task Management Application** built using the **MERN stack** (MongoDB, Express.js, React, Node.js). It enables users to create, manage, and filter tasks efficiently while ensuring secure access and personalized functionality. The project is designed with **JWT-based authentication**, a live **due-date alert system**, and user-friendly interfaces. Additionally, the application integrates **Gen AI to generate detailed descriptions** from short prompts, enhancing task creation with intelligent suggestions. The app is **fully optimized** for mobile devices, providing a seamless experience across all screen sizes. Users can also **visualize task statistics** through dynamic charts, making it easier to track task distribution and progress.
 
 ---
 
@@ -21,6 +21,8 @@ This is a full-featured **Task Management Application** built using the **MERN s
   - Built-in server validations ensure that due dates and assignee names are valid.
 - #### Delete Tasks:
   - Only the creator of a task can delete it for secure task management.
+- #### Generate Description:
+  - Generate detailed descriptions from short prompts using integrated Gen AI.
 - #### Labels/Tags:
   - Users can assign multiple labels/tags to tasks for better categorization.
  
