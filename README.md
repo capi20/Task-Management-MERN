@@ -75,6 +75,7 @@ This is a full-featured **Task Management Application** built using the **MERN s
 - **Authentication:** JSON Web Tokens (JWT)
 - **Real-time Alerts:** Server-Sent Events (SSE) with Cron Jobs
 - **Task & User Validations:** Mongoose
+- **Gen AI:** Gemini
 
 ---
 
@@ -99,25 +100,27 @@ This is a full-featured **Task Management Application** built using the **MERN s
         "password": "strongpassword123"
       }
       ```
+- **PUT `/api/auth/updateUser`** - Update user details.
+  
+    - Request Body:
+      ```
+      {
+        "name": "test user",
+        "password": "strongpassword123"
+      }
+      ```
 - **GET `/api/auth/logout`** - Log out the current user.
 - **GET `/api/auth/getCurrentUser`** - Fetch the currently logged-in user.
 ### Tasks
-- **GET `/api/tasks`** - Fetch all tasks with pagination.
+- **GET `/api/tasks`** - Fetch all tasks with pagination along with filtering and pagination.
 
     - Query Parameters (optional):
-      ```
-        page=1
-        limit=10
-      ```
-- **GET `/api/tasks/search`** - Fetch all tasks with filtering and pagination.
-
-    - Query Parameters (at least one param is required except page and limit):
       ```
         title=task1
         priority=High
         status=In Progress
         dueDate=2024-11-23
-        assignee=test@example.com
+        assignedMe=true
         page=1
         limit=10
       ```
@@ -125,7 +128,7 @@ This is a full-featured **Task Management Application** built using the **MERN s
 
     - Query Parameters (optional):
       ```
-        "assignee": "test@test.com"
+        "assignedMe": "true"
       ```
 - **GET `/api/tasks/:id`** - Get a task.
 - **POST `/api/tasks`** - Add a new task with optional labels/tags.
@@ -158,6 +161,7 @@ This is a full-featured **Task Management Application** built using the **MERN s
       ```
 - **DELETE `/api/tasks/:id`** - Delete a task (only by creator).
 ### Comments
+- **GET `/api/tasks/:id/comments`** - Get all comments for a task.
 - **POST `/api/tasks/comments`** - Add a comment to a task.
 
     - Request Body:
@@ -178,8 +182,15 @@ This is a full-featured **Task Management Application** built using the **MERN s
       ```
 - **DELETE `/api/tasks/:id/comments/:commentId`** - Delete a comment (only by creator). (Here /:id is task id)
 ### Real-Time Alerts
-- **GET `/api/reminders`** - Establishes an SSE connection for receiving real-time due date reminders.
-
+- **GET `/api/tasks/reminders`** - Establishes an SSE connection for receiving real-time due date reminders.
+### Generate Description from AI 
+- **POST `/api/generate-description`** - Generate detailed description from short prompt.
+    - Request Body:
+      ```
+      {
+        "prompt": "Create a login page"
+      }
+      ```
 ---
 
 ### 📋 Installation & Setup
@@ -216,6 +227,8 @@ cd Task-Management-MERN
   JWT_LIFETIME=1d
   NODE_ENV=development
   PORT=5000
+  GEMINI_API_KEY=<Your Gemini API Key>
+  GEMINI_MODEL=<Gemini Model>
   ```
 
 ### 5. Start the application
@@ -275,6 +288,7 @@ task-management-app
 ### 🌟 Key Highlights
 - **Secure APIs:** User authentication and creator based access ensure data privacy.
 - **Real-Time Functionality:** Due date alerts powered by SSE and cron jobs.
+- **AI-Powered Descriptions:** Generate detailed descriptions from short prompts using integrated Gen AI.
 - **Visualize Task Stats:** Visualize task stats through dynamic charts.
 - **Custom Labels:** Personalize tasks with labels/tags.
 - **Scalability:** Designed for large-scale usage with robust pagination, filtering, and sorting features.
