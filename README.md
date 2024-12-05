@@ -26,7 +26,7 @@ This is a full-featured **Task Management Application** built using the **MERN s
 - #### Labels/Tags:
   - Users can assign multiple labels/tags to tasks for better categorization.
  
-    <img src="screenshots/edittask.png" alt="edit task" width="600" height="300">
+    <img src="screenshots/taskform.png" alt="task form" width="600" height="300">
  
 ### Comments
 - Add comments to any task for better collaboration.
