@@ -14,7 +14,7 @@ export const sendReminders = (req, res) => {
 	// Add client to the connected list with user info
 	const clientInfo = {
 		res,
-		userEmail: req.user.userEmail // adding user email
+		userId: req.user.userId // adding user email
 	};
 	connectedClients.push(clientInfo);
 
@@ -28,7 +28,7 @@ export const sendReminders = (req, res) => {
 };
 
 export const startScheduler = () => {
-	cron.schedule("*/1 * * * *", async () => {
+	cron.schedule("0 * * * *", async () => {
 		console.log("Checking for task reminders...");
 		const today = new Date().toISOString().split("T")[0]; // Get today's date
 
@@ -49,15 +49,15 @@ export const startScheduler = () => {
 					return acc;
 				}, {});
 
-				// Send reminders to connected clients based on their userEmail
+				// Send reminders to connected clients based on their userId
 				connectedClients.forEach((client) => {
-					const userEmail = client.userEmail;
+					const userId = client.userId;
 
 					// Check if there are reminders for this user
-					if (remindersByAssignee[userEmail]) {
+					if (remindersByAssignee[userId]) {
 						client.res.write(
 							`data: ${JSON.stringify(
-								remindersByAssignee[userEmail]
+								remindersByAssignee[userId]
 							)}\n\n`
 						);
 					}
