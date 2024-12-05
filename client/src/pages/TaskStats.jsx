@@ -1,21 +1,18 @@
 import { useEffect, useState } from "react";
-import { BarChart } from "@mui/x-charts/BarChart";
 import { useAppContext } from "../context/appContext";
 import { serverInstance } from "../axiosInstances";
 import { PieChart } from "@mui/x-charts";
 import {
-	Box,
 	Checkbox,
 	FormControlLabel,
 	Grid2 as Grid,
-	Stack,
 	Typography
 } from "@mui/material";
 
 const TaskStats = () => {
 	const [checked, setChecked] = useState(false);
 	const [stats, setStats] = useState({});
-	const { alertHandler, setOpenLoader, user } = useAppContext();
+	const { alertHandler, setOpenLoader } = useAppContext();
 
 	useEffect(() => {
 		async function getTasksStats() {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
 	List,
 	ListItem,
@@ -28,7 +28,6 @@ const style = {
 
 const TaskReminders = () => {
 	const [reminders, setReminders] = useState([]);
-	const [snackbarOpen, setSnackbarOpen] = useState(false);
 	const [open, setOpen] = useState(false);
 	const handleOpen = () => setOpen(true);
 	const handleClose = () => setOpen(false);
@@ -42,7 +41,6 @@ const TaskReminders = () => {
 		eventSource.onmessage = (event) => {
 			const remindersData = JSON.parse(event.data);
 			setReminders(remindersData);
-			setSnackbarOpen(true);
 		};
 
 		eventSource.onerror = (err) => {
